@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -77,6 +78,9 @@ fun MainActivity.WeekView() {
                 }
                 val (totalWeek,_) =
                     remember { mutableStateOf(histories.sumOf { h -> h.payment }.formatPrice) }
+                val excecuteWeeK = remember {
+                    mutableStateListOf<Pair<String,String>>()
+                }
                 Column {
                     Card(
                         modifier = Modifier
@@ -86,7 +90,7 @@ fun MainActivity.WeekView() {
                         contentColor = colorResource(id = R.color.teal_200),
                         border = BorderStroke(1.dp, colorResource(id = R.color.teal_700)),
                         onClick = {
-
+                            setMessage(excecuteWeeK.distinctBy { it.second })
                         }
                     ) {
                         Row {
@@ -129,6 +133,8 @@ fun MainActivity.WeekView() {
                             border = BorderStroke(1.dp, colorResource(id = R.color.teal_700)),
                             onClick = {
                                 setMessage(textSend.distinct().joinToString("\n"),p.phone)
+                            }.apply {
+
                             }
                         ) {
                             Column {
@@ -150,25 +156,29 @@ fun MainActivity.WeekView() {
                                                 .toTypedArray()
                                         )
                                     }
-                                    textSend.add("   ${d.day.parseDate()}: ${d.total.formatPrice}")
+                                    textSend.add("   ${d.day.parseDate()}: ${d.total.formatPrice} P. ${persons.size}")
                                     Divider(color = colorResource(id = R.color.teal_700))
                                     Row {
                                         textTitle(d.day.parseDate(), Modifier.weight(1f))
                                         textTitle(d.total.formatPrice, Modifier.weight(1f))
+                                        textTitle("P. ${persons.size}", Modifier.weight(1f))
                                     }
                                     Divider(color = colorResource(id = R.color.teal_700))
                                     chargers.map { c ->
-                                        textSend.add("---```${c.charge.description}: ${c.payment.formatPrice}```")
+                                        textSend.add("   -```${c.charge.description}: ${c.charge.total.value.formatPrice} = ${c.payment.formatPrice}```")
                                         Row {
                                             textBody(c.charge.description, Modifier.weight(1f))
+                                            textBody(c.charge.total.value.formatPrice, Modifier.weight(1f))
                                             textBody(c.payment.formatPrice, Modifier.weight(1f))
                                         }
                                     }
                                 }
                             }
-
                         }
                         Spacer(modifier = Modifier.height(5.dp))
+                        if (excecuteWeeK.firstOrNull {e -> e.second == p.phone } == null){
+                            excecuteWeeK.add(Pair(textSend.distinct().joinToString("\n"),p.phone))
+                        }
                     }
                 }
 

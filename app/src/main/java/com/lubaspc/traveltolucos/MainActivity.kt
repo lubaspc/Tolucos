@@ -60,9 +60,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     fun setMessage(message: String, phone: String) {
-        Log.d("WHTASTER",message)
+        Log.d("WHTASTER", message)
         startActivity(
             Intent(Intent.ACTION_VIEW)
                 .setPackage("com.whatsapp")
@@ -74,6 +73,23 @@ class MainActivity : AppCompatActivity() {
                         )
                     )
                 )
+        )
+    }
+
+    fun setMessage(tasks: List<Pair<String, String>>) {
+        startActivities(
+            tasks.map {
+                Intent(Intent.ACTION_VIEW)
+                    .setPackage("com.whatsapp")
+                    .setData(
+                        Uri.parse(
+                            "https://api.whatsapp.com/send?phone=+52${it.second}&text=" + URLEncoder.encode(
+                                it.first,
+                                "UTF-8"
+                            )
+                        )
+                    )
+            }.toTypedArray()
         )
     }
 
