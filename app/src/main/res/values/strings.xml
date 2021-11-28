@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TravelTolucos</string>
+    <string name="title_cobors">Cobros del dia</string>
+    <string name="title_person">Personas</string>
+</resources>
