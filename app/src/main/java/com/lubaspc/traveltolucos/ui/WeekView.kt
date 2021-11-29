@@ -86,8 +86,8 @@ fun MainActivity.WeekView() {
                         modifier = Modifier
                             .fillMaxWidth(),
                         elevation = 10.dp,
-                        backgroundColor = colorResource(id = R.color.purple_500),
-                        contentColor = colorResource(id = R.color.teal_200),
+                        backgroundColor = colorResource(id = R.color.teal_700),
+                        contentColor = colorResource(id = R.color.white),
                         border = BorderStroke(1.dp, colorResource(id = R.color.teal_700)),
                         onClick = {
                             setMessage(excecuteWeeK.distinctBy { it.second })

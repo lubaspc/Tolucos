@@ -38,7 +38,7 @@ fun TravelTolucosTheme(
 //        } else {
 //            LightColorPalette
 //        },
-        colors = LightColorPalette,
+        colors = DarkColorPalette,
         typography = Typography,
         shapes = Shapes,
         content = content

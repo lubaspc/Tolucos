@@ -30,6 +30,7 @@ import com.lubaspc.traveltolucos.MainActivity
 import com.lubaspc.traveltolucos.R
 import com.lubaspc.traveltolucos.room.TypeCharge
 import com.lubaspc.traveltolucos.room.TypeOperation
+import com.lubaspc.traveltolucos.utils.formatPrice
 import com.lubaspc.traveltolucos.utils.parseDate
 
 @ExperimentalFoundationApi
@@ -124,7 +125,7 @@ fun MainActivity.SaveForm() {
                         Row {
                             textTitle(p.name)
                             Spacer(Modifier.weight(1f, true))
-                            textTitle("Total $totalPerson")
+                            textTitle("Total ${totalPerson.formatPrice}")
 
                         }
                     }
@@ -136,7 +137,7 @@ fun MainActivity.SaveForm() {
                                     modifier = Modifier
                                         .weight(1f, true)
                                         .padding(8.dp, 8.dp),
-                                    backgroundColor = colorResource(id = if (charge.checked.value) R.color.teal_200 else R.color.white),
+                                    backgroundColor = colorResource(id = if (charge.checked.value) R.color.red_dark else R.color.red_light),
                                     onClick = {
                                         if (charge.type == TypeCharge.GROUP) return@Card
                                         charge.checked.value = !charge.checked.value
@@ -163,14 +164,18 @@ fun MainActivity.SaveForm() {
                                                 })
                                             if (charge.operation == TypeOperation.MINUS)
                                                 Icon(
-                                                    modifier = Modifier.weight(1f,true).fillMaxHeight(),
+                                                    modifier = Modifier
+                                                        .weight(1f, true)
+                                                        .fillMaxHeight(),
                                                     painter = painterResource(id = R.drawable.ic_baseline_remove_24),
                                                     contentDescription = null
                                                 )
                                             else
                                                 Icon(
                                                     imageVector = Icons.Filled.Add,
-                                                    modifier = Modifier.weight(1f,true).fillMaxHeight(),
+                                                    modifier = Modifier
+                                                        .weight(1f, true)
+                                                        .fillMaxHeight(),
                                                     contentDescription = null
                                                 )
                                         }
