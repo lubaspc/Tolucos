@@ -156,14 +156,15 @@ fun MainActivity.WeekView() {
                                                 .toTypedArray()
                                         )
                                     }
-                                    textSend.add("   ${d.day.parseDate()}: ${d.total.formatPrice} P. ${
-                                        histories.filter { h -> h.day.parseDate() == d.day.parseDate() }.distinctBy {h -> h.personIdFk }.size
-                                    }")
+                                    val personsSize = remember{
+                                        histories.filter { h -> h.day.parseDate() == d.day.parseDate() }.distinctBy {h -> h.personIdFk }.size + 1
+                                    }
+                                    textSend.add("   ${d.day.parseDate()}: ${d.total.formatPrice} P. $personsSize")
                                     Divider(color = colorResource(id = R.color.teal_700))
                                     Row {
                                         textTitle(d.day.parseDate(), Modifier.weight(1f))
                                         textTitle(d.total.formatPrice, Modifier.weight(1f))
-                                        textTitle("P. ${persons.size}", Modifier.weight(1f))
+                                        textTitle("P. $personsSize", Modifier.weight(1f))
                                     }
                                     Divider(color = colorResource(id = R.color.teal_700))
                                     chargers.map { c ->
