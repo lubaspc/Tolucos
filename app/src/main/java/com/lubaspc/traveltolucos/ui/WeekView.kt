@@ -156,7 +156,9 @@ fun MainActivity.WeekView() {
                                                 .toTypedArray()
                                         )
                                     }
-                                    textSend.add("   ${d.day.parseDate()}: ${d.total.formatPrice} P. ${persons.size}")
+                                    textSend.add("   ${d.day.parseDate()}: ${d.total.formatPrice} P. ${
+                                        histories.filter { h -> h.day.parseDate() == d.day.parseDate() }.distinctBy {h -> h.personIdFk }.size
+                                    }")
                                     Divider(color = colorResource(id = R.color.teal_700))
                                     Row {
                                         textTitle(d.day.parseDate(), Modifier.weight(1f))
