@@ -61,6 +61,26 @@ class MTViewModel : ViewModel() {
         }.launchIn(viewModelScope)
     }
 
+    fun getHistory(monday: Calendar, friday: Calendar) {
+        dao.getDays(monday, friday).onEach {
+            history.clear()
+            history.addAll(it.map { d ->
+                d.chargePerson.run {
+                    ChargeDayMD(
+                        chargeIdFk,
+                        personIdFk,
+                        day,
+                        total,
+                        payment,
+                        pay,
+                        d.charge.toMd,
+                        d.person.toMd,
+                    )
+                }
+            })
+        }.launchIn(viewModelScope)
+    }
+
     fun consultHistory() {
         dao.getDays().onEach {
             history.clear()
@@ -133,6 +153,14 @@ class MTViewModel : ViewModel() {
             withContext(Dispatchers.Main) {
                 saved.value = true
             }
+        }
+    }
+
+    fun confirmPay(days: List<ChargeDayMD>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.updateDay(*days.map {
+                ChargePersonDb(it.chargeIdFk, it.personIdFk, it.day, it.total, it.payment, true)
+            }.toTypedArray())
         }
     }
 

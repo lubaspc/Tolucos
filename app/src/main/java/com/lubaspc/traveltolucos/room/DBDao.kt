@@ -1,10 +1,7 @@
 package com.lubaspc.traveltolucos.room
 
-import androidx.room.Dao
-import androidx.room.Insert
+import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Query
-import androidx.room.Room
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 
@@ -16,6 +13,10 @@ interface DBDao{
 
     @Query("select * from ChargePersonDb")
     fun getDays(): Flow<List<DayRelationDb>>
+
+
+    @Query("select * from ChargePersonDb where day BETWEEN :monday and :friday")
+    fun getDays(monday: Calendar,friday: Calendar): Flow<List<DayRelationDb>>
 
     @Query("select * from ChargeDb")
     fun getCharges() : Flow<List<ChargeDb>>
@@ -31,5 +32,8 @@ interface DBDao{
 
     @Insert(onConflict = REPLACE)
     fun insertDay(vararg day: ChargePersonDb)
+
+    @Update(onConflict = REPLACE)
+    fun updateDay(vararg day: ChargePersonDb)
 
 }
