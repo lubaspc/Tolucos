@@ -1,5 +1,6 @@
 package com.lubaspc.traveltolucos.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lubaspc.traveltolucos.R
 
+@SuppressLint("ComposableNaming")
 @ExperimentalMaterialApi
 @Composable
 fun cardCheck(

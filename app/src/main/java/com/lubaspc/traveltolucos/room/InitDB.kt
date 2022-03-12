@@ -18,9 +18,9 @@ class InitDB {
                             ChargeDb(
                                 1,
                                 ">Toluca",
-                                59.0,
+                                66.0,
                                 1,
-                                59.0,
+                                66.0,
                                 TypeCharge.GROUP,
                                 TypeOperation.PLUS
                             )
@@ -29,9 +29,9 @@ class InitDB {
                             ChargeDb(
                                 2,
                                 ">Marquesa",
-                                91.0,
+                                98.0,
                                 1,
-                                91.0,
+                                98.0,
                                 TypeCharge.GROUP,
                                 TypeOperation.PLUS
                             )
@@ -40,9 +40,9 @@ class InitDB {
                             ChargeDb(
                                 3,
                                 ">Santa fe",
-                                75.0,
+                                82.0,
                                 1,
-                                75.0,
+                                82.0,
                                 TypeCharge.GROUP,
                                 TypeOperation.PLUS
                             )
@@ -51,9 +51,9 @@ class InitDB {
                             ChargeDb(
                                 4,
                                 ">Periferico",
-                                8.9,
+                                10.0,
                                 1,
-                                8.9,
+                                10.0,
                                 TypeCharge.GROUP,
                                 TypeOperation.PLUS
                             )
@@ -63,9 +63,9 @@ class InitDB {
                             ChargeDb(
                                 5,
                                 "<Periferico",
-                                19.0,
+                                31.0,
                                 1,
-                                19.0,
+                                31.0,
                                 TypeCharge.GROUP,
                                 TypeOperation.PLUS
                             )
@@ -74,9 +74,9 @@ class InitDB {
                             ChargeDb(
                                 6,
                                 "<Santa fe",
-                                75.0,
+                                82.0,
                                 1,
-                                75.0,
+                                82.0,
                                 TypeCharge.GROUP,
                                 TypeOperation.PLUS
                             )
@@ -85,9 +85,9 @@ class InitDB {
                             ChargeDb(
                                 7,
                                 "<Marquesa",
-                                91.0,
+                                98.0,
                                 1,
-                                91.0,
+                                98.0,
                                 TypeCharge.GROUP,
                                 TypeOperation.PLUS
                             )
@@ -96,9 +96,9 @@ class InitDB {
                             ChargeDb(
                                 8,
                                 "<Toluca",
-                                59.0,
+                                66.0,
                                 1,
-                                59.0,
+                                66.0,
                                 TypeCharge.GROUP,
                                 TypeOperation.PLUS
                             )
@@ -108,9 +108,9 @@ class InitDB {
                             ChargeDb(
                                 9,
                                 "Gasolina",
-                                22.69,
+                                23.0,
                                 1,
-                                340.35,
+                                345.0,
                                 TypeCharge.GROUP,
                                 TypeOperation.PLUS
                             )
@@ -119,9 +119,9 @@ class InitDB {
                             ChargeDb(
                                 11,
                                 "(E)",
-                                10.0,
+                                12.0,
                                 1,
-                                10.0,
+                                12.0,
                                 TypeCharge.GROUP,
                                 TypeOperation.PLUS
                             )
@@ -153,9 +153,9 @@ class InitDB {
                             ChargeDb(
                                 10,
                                 "Gasolina/2",
-                                22.69,
+                                23.0,
                                 8,
-                                181.52,
+                                200.0,
                                 TypeCharge.PERSONAL,
                                 TypeOperation.MINUS
                             )

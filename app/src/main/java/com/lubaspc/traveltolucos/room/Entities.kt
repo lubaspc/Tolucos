@@ -23,7 +23,6 @@ data class ChargeDb(
     var total: Double,
     var type: TypeCharge,
     var operation: TypeOperation,
-
 )
 
 @Entity

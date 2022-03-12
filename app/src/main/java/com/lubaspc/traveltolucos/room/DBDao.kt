@@ -12,7 +12,7 @@ interface DBDao{
     fun chargesDay(day:Calendar): Flow<List<DayRelationDb>>
 
     @Query("select * from ChargePersonDb")
-    fun getDays(): Flow<List<DayRelationDb>>
+    fun getDays(): List<DayRelationDb>
 
 
     @Query("select * from ChargePersonDb where day BETWEEN :monday and :friday")

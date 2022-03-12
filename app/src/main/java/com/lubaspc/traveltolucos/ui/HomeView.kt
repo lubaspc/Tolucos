@@ -44,7 +44,6 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid as LazyVerticalGrid1
 @Composable
 @Preview(showBackground = true)
 fun MainActivity.HomeView() {
-    vModel.consultHistory()
     val (dateSelect, _) = remember { vModel.dateSelected }
     Scaffold(
         topBar = {

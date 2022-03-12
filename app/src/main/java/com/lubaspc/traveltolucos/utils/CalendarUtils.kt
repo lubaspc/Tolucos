@@ -19,10 +19,11 @@ fun String.parseDate(format: String = "dd/MM/yyyy"): Date? =
     SimpleDateFormat(format, Locale.getDefault()).parse(this)
 
 
-fun Calendar.moveField(field: Int,next: Boolean = false): Calendar{
+fun Calendar.moveField(field: Int,next: Boolean = false,addOne: Boolean = false): Calendar{
     val newCalendar = Calendar.getInstance().apply {
         timeInMillis = this@moveField.timeInMillis
     }
+    if (addOne) newCalendar.add(Calendar.DAY_OF_YEAR,1)
     while (newCalendar.get(Calendar.DAY_OF_WEEK) != field) {
         newCalendar.add(
             Calendar.DAY_OF_YEAR,

@@ -1,19 +1,22 @@
 package com.lubaspc.traveltolucos
 
+import android.graphics.Movie
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lubaspc.traveltolucos.model.ChargeDayMD
-import com.lubaspc.traveltolucos.model.ChargeMD
-import com.lubaspc.traveltolucos.model.PersonMD
+import com.google.gson.Gson
+import com.lubaspc.traveltolucos.model.*
 import com.lubaspc.traveltolucos.room.ChargePersonDb
 import com.lubaspc.traveltolucos.room.DBRoom
 import com.lubaspc.traveltolucos.room.TypeCharge
 import com.lubaspc.traveltolucos.room.TypeOperation
-import com.lubaspc.traveltolucos.utils.parseDate
-import com.lubaspc.traveltolucos.utils.toMd
+import com.lubaspc.traveltolucos.service.GenericResponse
+import com.lubaspc.traveltolucos.service.RetrofitService
+import com.lubaspc.traveltolucos.service.model.Movimiento
+import com.lubaspc.traveltolucos.service.model.Usuario
+import com.lubaspc.traveltolucos.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -25,16 +28,35 @@ class MTViewModel : ViewModel() {
     private val dao by lazy {
         DBRoom.db.dbDao()
     }
+    private val repository by lazy {
+        RetrofitService()
+    }
 
     val dateSelected = mutableStateOf(Calendar.getInstance())
     val charges = mutableStateListOf<ChargeMD>()
     val persons = mutableStateListOf<PersonMD>()
     val dayChanger = mutableStateListOf<ChargeDayMD>()
     val history = mutableStateListOf<ChargeDayMD>()
+    val weeks = mutableStateListOf<WeekModel>()
     val saved = mutableStateOf(false)
+
+    val accountData = MutableLiveData<Usuario>()
+    val movements = MutableLiveData<List<Movimiento>>()
 
     init {
         setDateSelect(dateSelected.value)
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = repository.getAccount()
+            if (response.errorCode in 200..299) {
+                accountData.postValue(response.data)
+                movements.postValue(
+                    response.data?.tags?.map {
+                        repository.getMovements(it,dateSelected.value)
+                    }?.flatMap {
+                        it.data ?: listOf() }
+                )
+            }
+        }
     }
 
     fun setDateSelect(it: Calendar) {
@@ -61,30 +83,10 @@ class MTViewModel : ViewModel() {
         }.launchIn(viewModelScope)
     }
 
-    fun getHistory(monday: Calendar, friday: Calendar) {
-        dao.getDays(monday, friday).onEach {
-            history.clear()
-            history.addAll(it.map { d ->
-                d.chargePerson.run {
-                    ChargeDayMD(
-                        chargeIdFk,
-                        personIdFk,
-                        day,
-                        total,
-                        payment,
-                        pay,
-                        d.charge.toMd,
-                        d.person.toMd,
-                    )
-                }
-            })
-        }.launchIn(viewModelScope)
-    }
-
     fun consultHistory() {
-        dao.getDays().onEach {
+        viewModelScope.launch(Dispatchers.IO) {
             history.clear()
-            history.addAll(it.map { d ->
+            history.addAll(dao.getDays().map { d ->
                 d.chargePerson.run {
                     ChargeDayMD(
                         chargeIdFk,
@@ -98,7 +100,38 @@ class MTViewModel : ViewModel() {
                     )
                 }
             })
-        }.launchIn(viewModelScope)
+
+            /*weeks.addAll(
+                history.mapIndexed { i, histori ->
+                    histori.day.moveField(Calendar.SUNDAY).run {
+                        val monday = moveField(Calendar.MONDAY, true)
+                        val sunday = moveField(Calendar.SUNDAY, next = true, addOne = true)
+                        val days = history.filter { h -> h.day.into(monday, sunday) }
+                        val persons = history.groupBy { it.person }
+                        WeekModel(
+                            monday,
+                            sunday,
+                            days.sumOf { h -> h.payment },
+                            mutableStateOf(i > history.size - 1),
+                            mutableStateOf(!persons.values.any { it.any { !it.pay } }),
+                            persons.map { group ->
+                                val daysPerson = group.value.distinctBy { h -> h.day.parseDate() }
+                                PersonModel(
+                                    group.key,
+                                    daysPerson.sumOf { h -> h.total },
+                                    daysPerson.sortedBy { it.day },
+                                    mutableStateOf(daysPerson.firstOrNull()?.pay != true)
+                                )
+                            },
+                            days
+                        )
+                    }
+                }.distinctBy { h -> h.monday }
+                    .sortedByDescending { h -> h.monday }
+
+
+            )*/
+        }
     }
 
     private fun getPerson() {

@@ -21,10 +21,13 @@ import com.lubaspc.traveltolucos.ui.WeekView
 import com.lubaspc.traveltolucos.ui.theme.TravelTolucosTheme
 import java.util.*
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.lifecycleScope
 import com.lubaspc.traveltolucos.model.ChargeDayMD
+import com.lubaspc.traveltolucos.room.InitDB
 import com.lubaspc.traveltolucos.utils.parseDate
 import java.net.URLEncoder
 
@@ -34,12 +37,18 @@ class MainActivity : AppCompatActivity() {
     val vModel: MTViewModel by viewModels()
     lateinit var navController: NavHostController
 
-    @ExperimentalAnimationApi
+
     @ExperimentalComposeUiApi
-    @ExperimentalFoundationApi
+    @ExperimentalAnimationApi
     @ExperimentalMaterialApi
+    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //InitDB.insertInitialDB(lifecycleScope)
+        vModel.consultHistory()
+        vModel.accountData.observe(this){
+            Toast.makeText(this, it.nombreCompleto, Toast.LENGTH_SHORT).show()
+        }
         setContent {
             navController = rememberNavController()
             TravelTolucosTheme {
@@ -65,7 +74,7 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("PAGAR") { d, v ->
                 d.dismiss()
                 vModel.confirmPay(days)
-                vModel.consultHistory()
+                //vModel.consultHistory()
             }.show()
     }
 
@@ -74,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         Log.d("WHTASTER", message)
         startActivity(
             Intent(Intent.ACTION_VIEW)
-                .setPackage("com.whatsapp")
+                .setPackage("com.whatsapp.w4b")
                 .setData(
                     Uri.parse(
                         "https://api.whatsapp.com/send?phone=+52$phone&text=" + URLEncoder.encode(
@@ -90,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         startActivities(
             tasks.map {
                 Intent(Intent.ACTION_VIEW)
-                    .setPackage("com.whatsapp")
+                    .setPackage("com.whatsapp.w4b")
                     .setData(
                         Uri.parse(
                             "https://api.whatsapp.com/send?phone=+52${it.second}&text=" + URLEncoder.encode(
