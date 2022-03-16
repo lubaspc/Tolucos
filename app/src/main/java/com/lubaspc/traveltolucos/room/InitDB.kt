@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class InitDB {
-    companion object{
+    companion object {
 
         @JvmStatic
         fun insertInitialDB(scope: CoroutineScope) {
@@ -16,103 +16,12 @@ class InitDB {
                     DBRoom.db.dbDao().apply {
                         insertCharge(
                             ChargeDb(
-                                1,
-                                ">Toluca",
-                                66.0,
-                                1,
-                                66.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
-                            )
-                        )
-                        insertCharge(
-                            ChargeDb(
-                                2,
-                                ">Marquesa",
-                                98.0,
-                                1,
-                                98.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
-                            )
-                        )
-                        insertCharge(
-                            ChargeDb(
-                                3,
-                                ">Santa fe",
-                                82.0,
-                                1,
-                                82.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
-                            )
-                        )
-                        insertCharge(
-                            ChargeDb(
-                                4,
-                                ">Periferico",
-                                10.0,
-                                1,
-                                10.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
-                            )
-                        )
-
-                        insertCharge(
-                            ChargeDb(
-                                5,
-                                "<Periferico",
-                                31.0,
-                                1,
-                                31.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
-                            )
-                        )
-                        insertCharge(
-                            ChargeDb(
-                                6,
-                                "<Santa fe",
-                                82.0,
-                                1,
-                                82.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
-                            )
-                        )
-                        insertCharge(
-                            ChargeDb(
-                                7,
-                                "<Marquesa",
-                                98.0,
-                                1,
-                                98.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
-                            )
-                        )
-                        insertCharge(
-                            ChargeDb(
-                                8,
-                                "<Toluca",
-                                66.0,
-                                1,
-                                66.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
-                            )
-                        )
-
-                        insertCharge(
-                            ChargeDb(
                                 9,
                                 "Gasolina",
                                 23.0,
                                 1,
                                 345.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
+                                TypeCharge.GROUP
                             )
                         )
                         insertCharge(
@@ -122,78 +31,29 @@ class InitDB {
                                 12.0,
                                 1,
                                 12.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
+                                TypeCharge.GROUP
                             )
                         )
                         insertCharge(
                             ChargeDb(
                                 12,
-                                "Extra Group",
+                                "Otro",
                                 0.0,
                                 1,
                                 0.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.PLUS
+                                TypeCharge.GROUP
                             )
                         )
                         insertCharge(
                             ChargeDb(
-                                15,
-                                "Minus Group",
+                                12,
+                                "Otro",
                                 0.0,
                                 1,
                                 0.0,
-                                TypeCharge.GROUP,
-                                TypeOperation.MINUS
+                                TypeCharge.PERSONAL
                             )
                         )
-
-                        insertCharge(
-                            ChargeDb(
-                                10,
-                                "Gasolina/2",
-                                23.0,
-                                8,
-                                200.0,
-                                TypeCharge.PERSONAL,
-                                TypeOperation.MINUS
-                            )
-                        )
-                        insertCharge(
-                            ChargeDb(
-                                13,
-                                "Extras",
-                                0.0,
-                                1,
-                                0.0,
-                                TypeCharge.PERSONAL,
-                                TypeOperation.PLUS
-                            )
-                        )
-                        insertCharge(
-                            ChargeDb(
-                                14,
-                                "Deducciones",
-                                0.0,
-                                1,
-                                0.0,
-                                TypeCharge.PERSONAL,
-                                TypeOperation.MINUS
-                            )
-                        )
-                        insertCharge(
-                            ChargeDb(
-                                16,
-                                "Viaje a casa",
-                                0.0,
-                                1,
-                                0.0,
-                                TypeCharge.PERSONAL,
-                                TypeOperation.PLUS
-                            )
-                        )
-
                         insertPerson(PersonDb(1, "Charly", "7228507896"))
                         insertPerson(PersonDb(2, "Maik", "7223731006"))
                         insertPerson(PersonDb(3, "Orihuela", "7224124088"))

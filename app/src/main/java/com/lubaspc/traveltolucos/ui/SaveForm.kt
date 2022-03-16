@@ -29,7 +29,6 @@ import androidx.constraintlayout.compose.Dimension
 import com.lubaspc.traveltolucos.MainActivity
 import com.lubaspc.traveltolucos.R
 import com.lubaspc.traveltolucos.room.TypeCharge
-import com.lubaspc.traveltolucos.room.TypeOperation
 import com.lubaspc.traveltolucos.utils.formatPrice
 import com.lubaspc.traveltolucos.utils.parseDate
 
@@ -43,7 +42,7 @@ fun MainActivity.SaveForm() {
     fun getTotal() =
         vModel.charges.sumOf {
             if (it.type == TypeCharge.GROUP && it.checked.value)
-                it.total.value * (if (it.operation == TypeOperation.MINUS) -1 else 1)
+                it.total.value
             else 0.0
         }
 
@@ -53,7 +52,7 @@ fun MainActivity.SaveForm() {
             p.listCharges.sumOf { c ->
                 if (c.checked.value) {
                     c.total.value / (if (c.type == TypeCharge.GROUP) personsSize
-                    else 1) * (if (c.operation == TypeOperation.MINUS) -1 else 1)
+                    else 1)
                 } else 0.0
             }
         }
@@ -108,7 +107,7 @@ fun MainActivity.SaveForm() {
                     p.listCharges.sumOf { c ->
                         if (c.checked.value) {
                             c.total.value / (if (c.type == TypeCharge.GROUP) personsSize
-                            else 1) * (if (c.operation == TypeOperation.MINUS) -1 else 1)
+                            else 1)
                         } else 0.0
                     }
                 val (totalPerson, setTotalPerson) = remember {
@@ -150,7 +149,7 @@ fun MainActivity.SaveForm() {
                                         Divider(color = colorResource(id = R.color.black))
                                         Row {
                                             TextField(
-                                                modifier = Modifier.weight(3f,true),
+                                                modifier = Modifier.weight(3f, true),
                                                 value = "${charge.total.value}",
                                                 enabled = charge.price <= 0.0 || charge.type == TypeCharge.PERSONAL,
                                                 keyboardOptions = KeyboardOptions(
@@ -162,22 +161,6 @@ fun MainActivity.SaveForm() {
                                                     superTotal.value = getSuperTotal()
 
                                                 })
-                                            if (charge.operation == TypeOperation.MINUS)
-                                                Icon(
-                                                    modifier = Modifier
-                                                        .weight(1f, true)
-                                                        .fillMaxHeight(),
-                                                    painter = painterResource(id = R.drawable.ic_baseline_remove_24),
-                                                    contentDescription = null
-                                                )
-                                            else
-                                                Icon(
-                                                    imageVector = Icons.Filled.Add,
-                                                    modifier = Modifier
-                                                        .weight(1f, true)
-                                                        .fillMaxHeight(),
-                                                    contentDescription = null
-                                                )
                                         }
                                     }
                                 }

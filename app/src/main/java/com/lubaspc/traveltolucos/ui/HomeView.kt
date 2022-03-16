@@ -3,6 +3,7 @@ package com.lubaspc.traveltolucos.ui
 import android.app.DatePickerDialog
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -35,6 +36,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.lubaspc.traveltolucos.MainActivity
 import com.lubaspc.traveltolucos.R
 import com.lubaspc.traveltolucos.room.TypeCharge
+import com.lubaspc.traveltolucos.utils.formatPrice
 import com.lubaspc.traveltolucos.utils.parseDate
 import java.util.*
 import androidx.compose.foundation.lazy.LazyVerticalGrid as LazyVerticalGrid1
@@ -91,39 +93,13 @@ fun MainActivity.HomeView() {
             }) {
                 item {
                     Text(
-                        text = stringResource(id = R.string.title_cobors),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-
-                items(vModel.charges.filter { it.type == TypeCharge.GROUP }
-                    .windowed(3, 3, true)) { chargesMinList ->
-                    Row() {
-                        chargesMinList.map { charge ->
-                            cardCheck(
-                                charge.checked.value,
-                                charge.description,
-                                modifier = Modifier.weight(1f, true)
-                            ) {
-                                charge.checked.value = !charge.checked.value
-//                                val index = charges.indexOf(charge)
-//                                charges.removeAt(index)
-//                                charges.add(index, charge)
-                            }
-                        }
-                    }
-                }
-
-                item {
-                    Text(
                         text = stringResource(id = R.string.title_person),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
 
-                itemsIndexed(vModel.persons.windowed(3, 3, true)) { index, personsMinList ->
+                itemsIndexed(vModel.persons.windowed(3, 3, true)) { _, personsMinList ->
                     Row(modifier = Modifier.fillMaxWidth()) {
                         personsMinList.mapIndexed { idx, person ->
                             cardCheck(
@@ -136,24 +112,41 @@ fun MainActivity.HomeView() {
                         }
                     }
                 }
+
+                item {
+                    Text(
+                        text = stringResource(id = R.string.title_cobors),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+
+                items(vModel.movementsState.filter {m -> m.fecha.parseDate() == dateSelect.parseDate()  }){ m ->
+                    Column {
+                        Box(Modifier.size(50.dp).background(Color.Blue))
+                        Text(text = "${m.tramo.take(5)}_${m.caseta.take(5)}")
+                        Text(text = m.monto.formatPrice)
+                    }
+                }
+                items(vModel.charges.filter { it.type == TypeCharge.GROUP }
+                    .windowed(3, 3, true)) { chargesMinList ->
+                    Row() {
+                        chargesMinList.map { charge ->
+                            cardCheck(
+                                charge.checked.value,
+                                charge.description,
+                                modifier = Modifier.weight(1f, true)
+                            ) {
+                                charge.checked.value = !charge.checked.value
+                            }
+                        }
+                    }
+                }
             }
 
             Button(
                 onClick = {
-                    vModel.persons.forEach { p ->
-                        p.listCharges.clear()
-                        vModel.charges.forEach { c ->
-                            p.listCharges.add(
-                                c.copy(
-                                    total = mutableStateOf(
-                                        if (c.type == TypeCharge.GROUP) c.total.value
-                                        else vModel.dayChanger.firstOrNull { d -> d.chargeIdFk == c.id && d.personIdFk == p.personId }?.payment
-                                            ?: c.total.value
-                                    )
-                                )
-                            )
-                        }
-                    }
+                    vModel.createSaveFrom()
                     navController.navigate("create_register")
                 },
                 Modifier

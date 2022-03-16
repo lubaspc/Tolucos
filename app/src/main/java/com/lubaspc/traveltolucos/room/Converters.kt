@@ -12,17 +12,5 @@ class Converters {
 
     @TypeConverter
     fun dateToTimestamp(date: Calendar) = date.parseDate()
-
-    @TypeConverter
-    fun toTypeCharge(value: String) = enumValueOf<TypeCharge>(value)
-
-    @TypeConverter
-    fun fromTypeCharge(value: TypeCharge) = value.name
-
-    @TypeConverter
-    fun toTypeOperation(value: String) = enumValueOf<TypeOperation>(value)
-
-    @TypeConverter
-    fun fromTypeOperation(value: TypeOperation) = value.name
 }
 

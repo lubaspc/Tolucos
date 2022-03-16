@@ -9,18 +9,20 @@ import java.io.File
 
 class App : Application() {
     companion object {
-        lateinit var sharedPreferences:SharedPreferences
+        lateinit var sharedPreferences: SharedPreferences
         const val COOKIES = "COOKIES"
 
     }
 
     override fun onCreate() {
         super.onCreate()
-        sharedPreferences = getSharedPreferences("Travel",Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("Travels", Context.MODE_PRIVATE)
         DBRoom.db = Room.databaseBuilder(
             applicationContext,
             DBRoom::class.java,
-            "db-tolucos"
-        ).build()
+            "db-toluca"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 }

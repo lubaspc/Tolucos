@@ -61,16 +61,12 @@ class RetrofitService {
             .addInterceptor {
                 it.proceed(it.request()).apply {
                     if (headers("set-cookie").isNotEmpty()) {
+                        if (headers("set-cookie").any { h -> h.contains("SERVERID=s2") && h.contains("SERVERID=s1") }) return@apply
                         App.sharedPreferences.edit {
-                            if (headers("set-cookie").any { it.contains("SERVERID=s") }) return@edit
-                            clear()
                             putStringSet(App.COOKIES, headers("set-cookie").toHashSet())
+                            clear()
                         }
-                        headersCookie =
-                            App.sharedPreferences.getStringSet(
-                                App.COOKIES,
-                                hashSetOf()
-                            ) ?: hashSetOf()
+                        headersCookie = headers("set-cookie").toHashSet()
                     }
                 }
             }
@@ -137,14 +133,14 @@ class RetrofitService {
 
     suspend fun getAccount() = onResponse { api.consultarDatosCuenta(clientId) }
 
-    suspend fun getMovements(tag: Tag, day: Calendar) =
+    suspend fun getMovements(tag: Tag, day: Calendar? = null) =
         onResponse {
             api.consultarMovimientos(
                 clientId,
                 tag.prefijo,
                 tag.numero,
-                day.parseDate("yyyy-MM-dd"),
-                day.parseDate("yyyy-MM-dd")
+                day?.parseDate("yyyy-MM-dd"),
+                day?.parseDate("yyyy-MM-dd")
             )
         }
 

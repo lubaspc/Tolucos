@@ -11,10 +11,10 @@ import com.lubaspc.traveltolucos.model.*
 import com.lubaspc.traveltolucos.room.ChargePersonDb
 import com.lubaspc.traveltolucos.room.DBRoom
 import com.lubaspc.traveltolucos.room.TypeCharge
-import com.lubaspc.traveltolucos.room.TypeOperation
 import com.lubaspc.traveltolucos.service.GenericResponse
 import com.lubaspc.traveltolucos.service.RetrofitService
 import com.lubaspc.traveltolucos.service.model.Movimiento
+import com.lubaspc.traveltolucos.service.model.Tag
 import com.lubaspc.traveltolucos.service.model.Usuario
 import com.lubaspc.traveltolucos.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -35,13 +35,13 @@ class MTViewModel : ViewModel() {
     val dateSelected = mutableStateOf(Calendar.getInstance())
     val charges = mutableStateListOf<ChargeMD>()
     val persons = mutableStateListOf<PersonMD>()
+    val movementsState = mutableStateListOf<Movimiento>()
     val dayChanger = mutableStateListOf<ChargeDayMD>()
     val history = mutableStateListOf<ChargeDayMD>()
     val weeks = mutableStateListOf<WeekModel>()
-    val saved = mutableStateOf(false)
 
+    val saved = mutableStateOf(false)
     val accountData = MutableLiveData<Usuario>()
-    val movements = MutableLiveData<List<Movimiento>>()
 
     init {
         setDateSelect(dateSelected.value)
@@ -49,31 +49,38 @@ class MTViewModel : ViewModel() {
             val response = repository.getAccount()
             if (response.errorCode in 200..299) {
                 accountData.postValue(response.data)
-                movements.postValue(
-                    response.data?.tags?.map {
-                        repository.getMovements(it,dateSelected.value)
-                    }?.flatMap {
-                        it.data ?: listOf() }
-                )
+                getMovements(response.data?.tags)
             }
+        }
+    }
+
+    private fun getMovements(tags: List<Tag>?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val movementssd = tags?.map {
+                repository.getMovements(it, dateSelected.value)
+            }?.flatMap {
+                it.data ?: listOf()
+            }
+            movements.value = movementssd ?: listOf()
+            movementsState.addAll(movementssd ?: listOf())
         }
     }
 
     fun setDateSelect(it: Calendar) {
         dateSelected.value = it
-
+        getMovements(accountData.value?.tags)
         dao.chargesDay(it).onEach { list ->
             dayChanger.clear()
             dayChanger.addAll(list.map { d ->
                 d.chargePerson.run {
                     ChargeDayMD(
-                        chargeIdFk,
+                        idChargePerson = idChargePerson,
                         personIdFk,
                         day,
                         total,
                         payment,
                         pay,
-                        d.charge.toMd,
+                        d.chargePerson.description,
                         d.person.toMd,
                     )
                 }
@@ -83,19 +90,22 @@ class MTViewModel : ViewModel() {
         }.launchIn(viewModelScope)
     }
 
+    val movements = MutableLiveData<List<Movimiento>>()
+
+
     fun consultHistory() {
         viewModelScope.launch(Dispatchers.IO) {
             history.clear()
             history.addAll(dao.getDays().map { d ->
                 d.chargePerson.run {
                     ChargeDayMD(
-                        chargeIdFk,
+                        idChargePerson = idChargePerson,
                         personIdFk,
                         day,
                         total,
                         payment,
                         pay,
-                        d.charge.toMd,
+                        d.chargePerson.description,
                         d.person.toMd,
                     )
                 }
@@ -151,7 +161,7 @@ class MTViewModel : ViewModel() {
             charges.clear()
             charges.addAll(list.map {
                 it.toMd.apply {
-                    checked.value = dayChanger.any { day -> day.chargeIdFk == it.chargeId }
+                    //checked.value = dayChanger.any { day -> day.chargeIdFk == it.chargeId }
                 }
             })
         }.launchIn(viewModelScope)
@@ -164,19 +174,20 @@ class MTViewModel : ViewModel() {
                 val total = p.listCharges.sumOf { c ->
                     if (c.checked.value) {
                         c.total.value / (if (c.type == TypeCharge.GROUP) personsSize
-                        else 1) * (if (c.operation == TypeOperation.MINUS) -1 else 1)
+                        else 1)
                     } else 0.0
                 }
                 p.listCharges.filter { it.checked.value }.forEach { c ->
                     dao.insertDay(
                         ChargePersonDb(
-                            chargeIdFk = c.id,
+                            idChargePerson = c.id,
                             personIdFk = p.personId,
                             day = dateSelected.value,
                             total = total,
+                            description = c.description,
                             payment = if (c.checked.value) {
                                 c.total.value / (if (c.type == TypeCharge.GROUP) personsSize
-                                else 1) * (if (c.operation == TypeOperation.MINUS) -1 else 1)
+                                else 1)
                             } else 0.0,
                             pay = false
                         )
@@ -192,9 +203,34 @@ class MTViewModel : ViewModel() {
     fun confirmPay(days: List<ChargeDayMD>) {
         viewModelScope.launch(Dispatchers.IO) {
             dao.updateDay(*days.map {
-                ChargePersonDb(it.chargeIdFk, it.personIdFk, it.day, it.total, it.payment, true)
+                ChargePersonDb(
+                    it.idChargePerson,
+                    it.personIdFk,
+                    it.description,
+                    it.day,
+                    it.total,
+                    it.payment,
+                    true
+                )
             }.toTypedArray())
         }
+    }
+
+    fun createSaveFrom() {
+        /* persons.forEach { p ->
+             p.listCharges.clear()
+             charges.forEach { c ->
+                 p.listCharges.add(
+                     c.copy(
+                         total = mutableStateOf(
+                             if (c.type == TypeCharge.GROUP) c.total.value
+                             else dayChanger.firstOrNull { d -> d.chargeIdFk == c.id && d.personIdFk == p.personId }?.payment
+                                 ?: c.total.value
+                         )
+                     )
+                 )
+             }
+         }*/
     }
 
 }

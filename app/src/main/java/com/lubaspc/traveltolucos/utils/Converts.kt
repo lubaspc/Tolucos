@@ -10,4 +10,4 @@ val PersonDb.toMd
     get() = PersonMD(personId, name, phone)
 
 val ChargeDb.toMd
-    get() =  ChargeMD(chargeId, description, price, amount,type, operation,mutableStateOf(total))
+    get() =  ChargeMD(chargeId, description, price, amount,type,mutableStateOf(total))

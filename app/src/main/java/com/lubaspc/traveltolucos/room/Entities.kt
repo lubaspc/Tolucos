@@ -8,10 +8,6 @@ enum class TypeCharge{
     PERSONAL,GROUP
 }
 
-enum class TypeOperation{
-    MINUS,PLUS
-}
-
 //Tables
 @Entity
 data class ChargeDb(
@@ -22,7 +18,6 @@ data class ChargeDb(
     var amount: Int,
     var total: Double,
     var type: TypeCharge,
-    var operation: TypeOperation,
 )
 
 @Entity
@@ -34,10 +29,12 @@ data class PersonDb(
 )
 
 //Relations
-@Entity(primaryKeys = ["chargeIdFk", "personIdFk","day"])
+@Entity()
 data class ChargePersonDb(
-    var chargeIdFk: Long,
+    @PrimaryKey(autoGenerate = true)
+    var idChargePerson: Long = 0,
     var personIdFk: Long,
+    var description: String,
     var day: Calendar,
     var total: Double,
     var payment: Double,
@@ -48,23 +45,8 @@ data class ChargePersonDb(
 data class DayRelationDb(
     @Embedded val chargePerson: ChargePersonDb,
     @Relation(
-        parentColumn = "chargeIdFk",
-        entityColumn = "chargeId",
-    )
-    val charge: ChargeDb,
-    @Relation(
         parentColumn = "personIdFk",
         entityColumn = "personId",
     )
     val person: PersonDb
-)
-
-data class PersonWhitCharges(
-    @Embedded val person: PersonDb,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "chargeId",
-        associateBy = Junction(ChargePersonDb::class)
-    )
-    val charges: List<ChargeDb>,
 )

@@ -199,14 +199,14 @@ fun MainActivity.WeekView() {
                                             }
                                             Divider(color = colorResource(id = R.color.teal_700))
                                             chargers.map { c ->
-                                                textSend.add("   -```${c.charge.description}: ${c.charge.total.value.formatPrice} = ${c.payment.formatPrice}```")
+                                                textSend.add("   -```${c.description}: ${c.total.formatPrice} = ${c.payment.formatPrice}```")
                                                 Row {
                                                     textBody(
-                                                        c.charge.description,
+                                                        c.description,
                                                         Modifier.weight(1f)
                                                     )
                                                     textBody(
-                                                        c.charge.total.value.formatPrice,
+                                                        c.total.formatPrice,
                                                         Modifier.weight(1f)
                                                     )
                                                     textBody(
