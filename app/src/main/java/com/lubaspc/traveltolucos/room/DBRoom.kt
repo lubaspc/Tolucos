@@ -9,7 +9,7 @@ import androidx.room.TypeConverters
         ChargeDb::class,
         PersonDb::class,
         ChargePersonDb::class
-    ], version = 1
+    ], version = 2
 )
 @TypeConverters(Converters::class)
 abstract class DBRoom : RoomDatabase() {

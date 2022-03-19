@@ -9,6 +9,6 @@ data class PersonMD(
     var personId: Long,
     var name: String,
     var phone: String,
-    var checked: MutableState<Boolean> = mutableStateOf(false),
-    var listCharges: SnapshotStateList<ChargeMD> = mutableStateListOf()
+    var checked: Boolean =false,
+    var listCharges: MutableList<ChargeMD> = mutableListOf()
 )

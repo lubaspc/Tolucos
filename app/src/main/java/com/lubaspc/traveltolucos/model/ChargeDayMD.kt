@@ -10,5 +10,7 @@ data class ChargeDayMD(
     var payment: Double,
     var pay: Boolean,
     var description: String,
-    var person: PersonMD
+    var person: PersonMD,
+    var noPersons: Int,
+    var chargeId: Long? = null
 )

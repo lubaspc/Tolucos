@@ -58,18 +58,6 @@ class RetrofitService {
                         .build()
                 )
             }
-            .addInterceptor {
-                it.proceed(it.request()).apply {
-                    if (headers("set-cookie").isNotEmpty()) {
-                        if (headers("set-cookie").any { h -> h.contains("SERVERID=s2") && h.contains("SERVERID=s1") }) return@apply
-                        App.sharedPreferences.edit {
-                            putStringSet(App.COOKIES, headers("set-cookie").toHashSet())
-                            clear()
-                        }
-                        headersCookie = headers("set-cookie").toHashSet()
-                    }
-                }
-            }
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
 
         Retrofit.Builder()
@@ -117,7 +105,17 @@ class RetrofitService {
         try {
             cb().run {
                 if (code() == 401) {
-                    clientId = api.login(user, pass, true).body() ?: 0L
+                    api.login(user, pass, true).apply {
+                        if (code() in 200..299) {
+                            clientId = body() ?: 0L
+                            val setCookie = headers().values("set-cookie").toSet()
+                            headersCookie = setCookie
+                            App.sharedPreferences.edit {
+                                putStringSet(App.COOKIES,setCookie)
+                                clear()
+                            }
+                        }
+                    }
                     onResponse(cb)
                 } else GenericResponse(code(), body(), message())
             }

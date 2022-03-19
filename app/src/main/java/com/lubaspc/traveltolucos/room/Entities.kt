@@ -14,9 +14,9 @@ data class ChargeDb(
     @PrimaryKey
     var chargeId: Long,
     var description: String,
-    var price: Double,
-    var amount: Int,
-    var total: Double,
+    var price: Double, //CU
+    var amount: Int, //Cantidad
+    var total: Double,//Total
     var type: TypeCharge,
 )
 
@@ -29,16 +29,18 @@ data class PersonDb(
 )
 
 //Relations
-@Entity()
+@Entity
 data class ChargePersonDb(
     @PrimaryKey(autoGenerate = true)
     var idChargePerson: Long = 0,
-    var personIdFk: Long,
-    var description: String,
-    var day: Calendar,
-    var total: Double,
-    var payment: Double,
-    var pay: Boolean
+    var personIdFk: Long, //Persona
+    var description: String, // Charge
+    var day: Calendar,// Dia
+    var total: Double, // Cobro del cargo en total
+    var payment: Double, // Cobro de esta persona a este cargo
+    var noPersons: Int ,// A cuantos se les cargo esto
+    var pay: Boolean, // Esta pagado
+    var chargeId: Long = 0 // Si lo hay
 )
 
 //Embedded

@@ -9,31 +9,33 @@ import java.util.*
 interface DBDao{
 
     @Query("select * from ChargePersonDb where day = :day")
-    fun chargesDay(day:Calendar): Flow<List<DayRelationDb>>
+    suspend fun chargesDay(day:Calendar): List<DayRelationDb>
 
     @Query("select * from ChargePersonDb")
-    fun getDays(): List<DayRelationDb>
+    suspend fun getDays(): List<DayRelationDb>
 
 
     @Query("select * from ChargePersonDb where day BETWEEN :monday and :friday")
-    fun getDays(monday: Calendar,friday: Calendar): Flow<List<DayRelationDb>>
+    suspend fun getDays(monday: Calendar,friday: Calendar): List<DayRelationDb>
 
     @Query("select * from ChargeDb")
-    fun getCharges() : Flow<List<ChargeDb>>
+    suspend fun getCharges() : List<ChargeDb>
 
     @Query("select * from PersonDb")
-    fun getPerson() : Flow<List<PersonDb>>
+    suspend fun getPerson() : List<PersonDb>
 
     @Insert(onConflict = REPLACE)
-    fun insertCharge(charge: ChargeDb)
+    suspend fun insertCharge(charge: ChargeDb)
 
     @Insert(onConflict = REPLACE)
-    fun insertPerson(person: PersonDb)
+    suspend fun insertPerson(person: PersonDb)
 
     @Insert(onConflict = REPLACE)
-    fun insertDay(vararg day: ChargePersonDb)
+    suspend fun insertDay(vararg day: ChargePersonDb)
 
     @Update(onConflict = REPLACE)
-    fun updateDay(vararg day: ChargePersonDb)
+    suspend fun updateDay(vararg day: ChargePersonDb)
 
+    @Query("DELETE FROM ChargePersonDb")
+    fun deleteChargePerson()
 }

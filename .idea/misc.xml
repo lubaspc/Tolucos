@@ -10,8 +10,19 @@
         <entry key="../../../../layout/compose-model-1637615957497.xml" value="0.33826013513513514" />
         <entry key="../../../../layout/compose-model-1637618201821.xml" value="0.33" />
         <entry key="app/src/main/res/drawable/ic_baseline_remove_24.xml" value="0.22395833333333334" />
-        <entry key="app/src/main/res/layout/fragmet_home.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/fragment_hisotry.xml" value="0.19895833333333332" />
+        <entry key="app/src/main/res/layout/fragment_history.xml" value="0.19895833333333332" />
+        <entry key="app/src/main/res/layout/fragment_save_form.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/fragmet_home.xml" value="0.17276720351390923" />
+        <entry key="app/src/main/res/layout/item_charge_day.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/item_charge_rv.xml" value="0.19895833333333332" />
+        <entry key="app/src/main/res/layout/item_charges.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/item_day_rv.xml" value="0.19895833333333332" />
+        <entry key="app/src/main/res/layout/item_person.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/item_person_rv.xml" value="0.19895833333333332" />
+        <entry key="app/src/main/res/layout/item_week.xml" value="0.19895833333333332" />
         <entry key="app/src/main/res/layout/main_activity.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/menu/bottom_app_bar.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3859375" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3859375" />
       </map>

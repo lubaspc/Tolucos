@@ -59,7 +59,7 @@ class InitDB {
                         insertPerson(PersonDb(3, "Orihuela", "7224124088"))
                         insertPerson(PersonDb(4, "Mayle", "7226455089"))
                         insertPerson(PersonDb(5, "Nestor", "7228593599"))
-
+                        //deleteChargePerson()
                     }
                 }
             }

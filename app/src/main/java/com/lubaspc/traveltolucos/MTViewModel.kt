@@ -1,27 +1,21 @@
 package com.lubaspc.traveltolucos
 
-import android.graphics.Movie
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 import com.lubaspc.traveltolucos.model.*
 import com.lubaspc.traveltolucos.room.ChargePersonDb
 import com.lubaspc.traveltolucos.room.DBRoom
 import com.lubaspc.traveltolucos.room.TypeCharge
-import com.lubaspc.traveltolucos.service.GenericResponse
 import com.lubaspc.traveltolucos.service.RetrofitService
 import com.lubaspc.traveltolucos.service.model.Movimiento
 import com.lubaspc.traveltolucos.service.model.Tag
 import com.lubaspc.traveltolucos.service.model.Usuario
 import com.lubaspc.traveltolucos.utils.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 
 class MTViewModel : ViewModel() {
@@ -32,170 +26,165 @@ class MTViewModel : ViewModel() {
         RetrofitService()
     }
 
-    val dateSelected = mutableStateOf(Calendar.getInstance())
-    val charges = mutableStateListOf<ChargeMD>()
-    val persons = mutableStateListOf<PersonMD>()
-    val movementsState = mutableStateListOf<Movimiento>()
-    val dayChanger = mutableStateListOf<ChargeDayMD>()
-    val history = mutableStateListOf<ChargeDayMD>()
-    val weeks = mutableStateListOf<WeekModel>()
+    val dateSelected = MutableLiveData(Calendar.getInstance())
+    val charges = MutableLiveData<MutableList<ChargeMD>>()
+    val persons = MutableLiveData<List<PersonMD>>()
+    val personSave = MutableLiveData<List<PersonMD>>()
+    val dayChanger = MutableLiveData<List<ChargeDayMD>>()
+    val weeks = MutableLiveData<List<WeekModel>>()
+    val movements = MutableLiveData<List<Movimiento>>()
 
-    val saved = mutableStateOf(false)
-    val accountData = MutableLiveData<Usuario>()
+    val accountData = MutableLiveData<Usuario?>()
 
     init {
-        setDateSelect(dateSelected.value)
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.getAccount()
-            if (response.errorCode in 200..299) {
-                accountData.postValue(response.data)
-                getMovements(response.data?.tags)
+        dateSelected.observeForever {
+            viewModelScope.launch(Dispatchers.IO) {
+                dayChanger.postValue(dao.chargesDay(it).map { d ->
+                    d.chargePerson.run {
+                        ChargeDayMD(
+                            idChargePerson,
+                            personIdFk,
+                            day,
+                            total,
+                            payment,
+                            pay,
+                            d.chargePerson.description,
+                            d.person.toMd,
+                            noPersons,
+                        )
+                    }
+                })
+                getCharges()
+                getPerson()
+                getMovements(accountData.value?.tags, it)
             }
         }
-    }
-
-    private fun getMovements(tags: List<Tag>?) {
         viewModelScope.launch(Dispatchers.IO) {
-            val movementssd = tags?.map {
-                repository.getMovements(it, dateSelected.value)
-            }?.flatMap {
-                it.data ?: listOf()
-            }
-            movements.value = movementssd ?: listOf()
-            movementsState.addAll(movementssd ?: listOf())
-        }
-    }
-
-    fun setDateSelect(it: Calendar) {
-        dateSelected.value = it
-        getMovements(accountData.value?.tags)
-        dao.chargesDay(it).onEach { list ->
-            dayChanger.clear()
-            dayChanger.addAll(list.map { d ->
-                d.chargePerson.run {
-                    ChargeDayMD(
-                        idChargePerson = idChargePerson,
-                        personIdFk,
-                        day,
-                        total,
-                        payment,
-                        pay,
-                        d.chargePerson.description,
-                        d.person.toMd,
-                    )
-                }
+            accountData.postValue(repository.getAccount().data.also {
+                getMovements(it?.tags, dateSelected.value!!)
             })
-            getCharges()
-            getPerson()
-        }.launchIn(viewModelScope)
+        }
     }
 
-    val movements = MutableLiveData<List<Movimiento>>()
+    private suspend fun getMovements(tags: List<Tag>?, date: Calendar) {
+        if (tags == null) return
+        movements.postValue(tags.map {
+            repository.getMovements(it, date)
+        }.flatMap {
+            it.data ?: listOf()
+        }.also {
+            charges.postValue(charges.value?.apply {
+                addAll(0,
+                    it.filter { it.fecha.parseDate() == date.parseDate() }
+                        .map {
+                            ChargeMD(
+                                0,
+                                it.caseta + " " + it.tramo,
+                                it.monto,
+                                1,
+                                TypeCharge.GROUP,
+                                it.monto,
+                                true
+                            )
+                        })
+            })
+        })
+    }
 
 
     fun consultHistory() {
         viewModelScope.launch(Dispatchers.IO) {
-            history.clear()
-            history.addAll(dao.getDays().map { d ->
-                d.chargePerson.run {
-                    ChargeDayMD(
-                        idChargePerson = idChargePerson,
-                        personIdFk,
-                        day,
-                        total,
-                        payment,
-                        pay,
-                        d.chargePerson.description,
-                        d.person.toMd,
-                    )
-                }
-            })
-
-            /*weeks.addAll(
-                history.mapIndexed { i, histori ->
-                    histori.day.moveField(Calendar.SUNDAY).run {
+            val history = dao.getDays()
+            weeks.postValue(
+                history.mapIndexed { i, d ->
+                    d.chargePerson.day.moveField(Calendar.SUNDAY).run {
                         val monday = moveField(Calendar.MONDAY, true)
                         val sunday = moveField(Calendar.SUNDAY, next = true, addOne = true)
-                        val days = history.filter { h -> h.day.into(monday, sunday) }
+                        val days = history.filter { h -> h.chargePerson.day.into(monday, sunday) }
                         val persons = history.groupBy { it.person }
                         WeekModel(
                             monday,
                             sunday,
-                            days.sumOf { h -> h.payment },
-                            mutableStateOf(i > history.size - 1),
-                            mutableStateOf(!persons.values.any { it.any { !it.pay } }),
+                            days.sumOf { h -> h.chargePerson.payment },
+                            i > history.size - 1,
+                            !persons.values.any { it.any { !it.chargePerson.pay } },
                             persons.map { group ->
-                                val daysPerson = group.value.distinctBy { h -> h.day.parseDate() }
+                                val daysPerson =
+                                    group.value.distinctBy { h -> h.chargePerson.day.parseDate() }
                                 PersonModel(
-                                    group.key,
-                                    daysPerson.sumOf { h -> h.total },
-                                    daysPerson.sortedBy { it.day },
-                                    mutableStateOf(daysPerson.firstOrNull()?.pay != true)
+                                    group.key.name,
+                                    daysPerson.sumOf { h -> h.chargePerson.total },
+                                    daysPerson.map { dp ->
+                                        val personSize =
+                                            history.filter { h -> h.chargePerson.day == dp.chargePerson.day }
+                                                .distinctBy { it.person }.size
+                                        DayModel(
+                                            dp.chargePerson.day,
+                                            dp.chargePerson.total,
+                                            personSize,
+                                            daysPerson.filter { it.chargePerson.day.parseDate() == dp.chargePerson.day.parseDate() }
+                                                .map {
+                                                    ChargeModel(
+                                                        it.chargePerson.description,
+                                                        it.chargePerson.total,
+                                                        it.chargePerson.payment
+                                                    )
+                                                }
+                                        )
+                                    },
+                                    daysPerson.firstOrNull()?.chargePerson?.pay != true
                                 )
                             },
-                            days
                         )
                     }
-                }.distinctBy { h -> h.monday }
-                    .sortedByDescending { h -> h.monday }
-
-
-            )*/
+                }.distinctBy { it.monday }
+                    .sortedByDescending { it.monday }
+            )
         }
     }
 
     private fun getPerson() {
-        dao.getPerson().onEach { list ->
-            persons.clear()
-            persons.addAll(list.map {
+        viewModelScope.launch(Dispatchers.IO) {
+            persons.postValue(dao.getPerson().map {
                 it.toMd.apply {
-                    checked.value = dayChanger.any { day -> day.personIdFk == it.personId }
+                    checked = dayChanger.value?.any { day -> day.personIdFk == it.personId } == true
                 }
             })
-        }.launchIn(viewModelScope)
+        }
+
     }
 
 
     private fun getCharges() {
-        dao.getCharges().onEach { list ->
-            charges.clear()
-            charges.addAll(list.map {
+        viewModelScope.launch(Dispatchers.IO) {
+            charges.postValue(dao.getCharges().map {
                 it.toMd.apply {
-                    //checked.value = dayChanger.any { day -> day.chargeIdFk == it.chargeId }
+                    checked = dayChanger.value?.any { day -> day.chargeId == it.chargeId } == true
                 }
-            })
-        }.launchIn(viewModelScope)
+            }.toMutableList())
+        }
     }
 
     fun saveForm() {
-        val personsSize = persons.filter { it.checked.value }.size + 1
+        val personsSize = personSave.value?.size ?: 0 + 1
         viewModelScope.launch(Dispatchers.IO) {
-            persons.filter { it.checked.value }.forEach { p ->
-                val total = p.listCharges.sumOf { c ->
-                    if (c.checked.value) {
-                        c.total.value / (if (c.type == TypeCharge.GROUP) personsSize
-                        else 1)
-                    } else 0.0
-                }
-                p.listCharges.filter { it.checked.value }.forEach { c ->
-                    dao.insertDay(
-                        ChargePersonDb(
-                            idChargePerson = c.id,
-                            personIdFk = p.personId,
-                            day = dateSelected.value,
-                            total = total,
-                            description = c.description,
-                            payment = if (c.checked.value) {
-                                c.total.value / (if (c.type == TypeCharge.GROUP) personsSize
-                                else 1)
-                            } else 0.0,
-                            pay = false
-                        )
+            fun ChargeMD.getTotal() =
+                if (checked) total / (if (type == TypeCharge.GROUP) personsSize else 1)
+                else 0.0
+            personSave.value?.forEach { p ->
+                p.listCharges.filter { it.checked }.forEach { c ->
+                    val data = ChargePersonDb(
+                        personIdFk = p.personId, //Correco
+                        day = dateSelected.value!!, //Correcto
+                        total = c.total,
+                        description = c.description,
+                        payment = c.getTotal(),
+                        pay = false,
+                        chargeId = c.id,
+                        noPersons = if (c.type == TypeCharge.GROUP) personsSize else 1
                     )
+                    dao.insertDay(data)
                 }
-            }
-            withContext(Dispatchers.Main) {
-                saved.value = true
             }
         }
     }
@@ -210,27 +199,24 @@ class MTViewModel : ViewModel() {
                     it.day,
                     it.total,
                     it.payment,
+                    it.noPersons,
                     true
                 )
             }.toTypedArray())
         }
     }
 
-    fun createSaveFrom() {
-        /* persons.forEach { p ->
-             p.listCharges.clear()
-             charges.forEach { c ->
-                 p.listCharges.add(
-                     c.copy(
-                         total = mutableStateOf(
-                             if (c.type == TypeCharge.GROUP) c.total.value
-                             else dayChanger.firstOrNull { d -> d.chargeIdFk == c.id && d.personIdFk == p.personId }?.payment
-                                 ?: c.total.value
-                         )
-                     )
-                 )
-             }
-         }*/
+    fun createSaveFrom(chargesDay: List<ChargeMD>) {
+        personSave.value =
+            persons.value?.filter { p -> p.checked }?.map { p ->
+                p.copy().apply {
+                    p.listCharges.clear()
+                    p.listCharges.addAll(chargesDay.map { c -> c.copy() })
+                    p.listCharges.addAll(
+                        charges.value?.filter { it.type == TypeCharge.PERSONAL } ?: listOf()
+                    )
+                }
+            }
     }
 
 }

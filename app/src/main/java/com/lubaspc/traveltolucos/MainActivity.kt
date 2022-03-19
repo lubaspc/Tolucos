@@ -14,53 +14,42 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.lubaspc.traveltolucos.ui.HomeView
-import com.lubaspc.traveltolucos.ui.SaveForm
-import com.lubaspc.traveltolucos.ui.SettingsView
-import com.lubaspc.traveltolucos.ui.WeekView
-import com.lubaspc.traveltolucos.ui.theme.TravelTolucosTheme
 import java.util.*
 import android.util.Log
+import android.view.View
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.lubaspc.traveltolucos.model.ChargeDayMD
 import com.lubaspc.traveltolucos.room.InitDB
+import com.lubaspc.traveltolucos.ui.fragment.HistoryFragment
+import com.lubaspc.traveltolucos.ui.fragment.HomeFragment
+import com.lubaspc.traveltolucos.ui.fragment.SaveFormFragment
 import com.lubaspc.traveltolucos.utils.parseDate
 import java.net.URLEncoder
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome, SaveFormFragment.HandlerForm {
 
-    val vModel: MTViewModel by viewModels()
-    lateinit var navController: NavHostController
+    private val vModel: MTViewModel by viewModels()
 
-
-    @ExperimentalComposeUiApi
-    @ExperimentalAnimationApi
-    @ExperimentalMaterialApi
-    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //InitDB.insertInitialDB(lifecycleScope)
-        vModel.consultHistory()
-        vModel.accountData.observe(this){
-            Toast.makeText(this, it.nombreCompleto, Toast.LENGTH_SHORT).show()
-        }
-        setContent {
-            navController = rememberNavController()
-            TravelTolucosTheme {
-                NavHost(navController = navController, startDestination = "home") {
-                    composable("home") { HomeView() }
-                    composable("week") { WeekView() }
-                    composable("settings") { SettingsView() }
-                    composable("create_register") { SaveForm() }
-                }
-            }
+        setContentView(R.layout.main_activity)
+        nextFragment(HomeFragment())
+        InitDB.insertInitialDB(lifecycleScope)
+    }
 
-        }
+    private fun nextFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.container, fragment, fragment.javaClass.simpleName)
+            .addToBackStack(this.javaClass.simpleName)
+            .commit()
     }
 
     fun showDialogChagePay(days: List<ChargeDayMD>, period: String) {
@@ -112,20 +101,9 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    override fun openSaveDay() = nextFragment(SaveFormFragment())
+    override fun openHistory() = nextFragment(HistoryFragment())
+    override fun saveForm() = onBackPressed()
 
-    fun showDatePicker() {
-        MaterialDatePicker.Builder.datePicker()
-            .setTitleText("Mi dialogo")
-            .build()
-            .apply {
-                addOnPositiveButtonClickListener {
-                    vModel.setDateSelect(Calendar.getInstance().apply {
-                        timeInMillis = it
-                        add(Calendar.DAY_OF_MONTH, 1)
-                    })
-                }
-            }
-            .show(supportFragmentManager, "")
-    }
 }
 
