@@ -9,4 +9,6 @@
     <color name="red_dark">#ab000d</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="purple_dark">#560027</color>
+    <color name="green">#255d00</color>
 </resources>

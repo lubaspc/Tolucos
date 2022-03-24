@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:contentDescription="Historial"
+        android:id="@+id/m_config"
         android:icon="@drawable/ic_baseline_menu_book_24"
-        android:title="Historial" />
+        android:title="Configuracion" />
+
+    <item
+        android:id="@+id/m_remove_day"
+        android:icon="@drawable/ic_baseline_menu_book_24"
+        android:title="Remover fecha" />
 </menu>

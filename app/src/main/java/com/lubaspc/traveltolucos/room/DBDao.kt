@@ -18,6 +18,9 @@ interface DBDao{
     @Query("select * from ChargePersonDb where day BETWEEN :monday and :friday")
     suspend fun getDays(monday: Calendar,friday: Calendar): List<DayRelationDb>
 
+    @Query("select DISTINCT day from ChargePersonDb")
+    suspend fun getDisDays(): List<Calendar>
+
     @Query("select * from ChargeDb")
     suspend fun getCharges() : List<ChargeDb>
 
@@ -36,6 +39,12 @@ interface DBDao{
     @Update(onConflict = REPLACE)
     suspend fun updateDay(vararg day: ChargePersonDb)
 
+    @Query("update ChargePersonDb set pay = :pay where idChargePerson = :id")
+    fun updateChargePerson(pay: Boolean,id: Long)
+
     @Query("DELETE FROM ChargePersonDb")
     fun deleteChargePerson()
+
+    @Query("DELETE FROM ChargePersonDb where day = :day")
+    fun deleteChargePerson(day: Calendar)
 }

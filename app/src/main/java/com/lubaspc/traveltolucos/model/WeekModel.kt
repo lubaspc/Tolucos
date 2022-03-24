@@ -15,9 +15,11 @@ data class WeekModel(
 
 data class PersonModel(
     val person: String,
+    val phone: String,
     val total: Double,
-    val days: List<DayModel>,
-    var show: Boolean = false
+    var show: Boolean = false,
+    var completePay: Boolean = true,
+    val days: List<DayModel>
 )
 
 data class DayModel(
@@ -28,6 +30,7 @@ data class DayModel(
 )
 
 data class ChargeModel(
+    val idChargePerson: Long,
     val description: String,
     val total: Double,
     val payment: Double

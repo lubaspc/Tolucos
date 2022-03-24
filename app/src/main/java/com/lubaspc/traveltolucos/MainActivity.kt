@@ -1,5 +1,6 @@
 package com.lubaspc.traveltolucos
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -42,7 +43,8 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome, SaveFormFrag
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         nextFragment(HomeFragment())
-        InitDB.insertInitialDB(lifecycleScope)
+
+        //InitDB.insertInitialDB(lifecycleScope)
     }
 
     private fun nextFragment(fragment: Fragment) {
@@ -52,53 +54,13 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome, SaveFormFrag
             .commit()
     }
 
-    fun showDialogChagePay(days: List<ChargeDayMD>, period: String) {
-        AlertDialog.Builder(this)
-            .setTitle("Confirmar pago")
-            .setMessage(
-                "Estas seguro de confirmar el pago de ${
-                    days.firstOrNull()?.person?.name
-                } en la semana del $period"
-            )
-            .setPositiveButton("PAGAR") { d, v ->
-                d.dismiss()
-                vModel.confirmPay(days)
-                //vModel.consultHistory()
-            }.show()
-    }
-
-
-    fun setMessage(message: String, phone: String) {
-        Log.d("WHTASTER", message)
-        startActivity(
-            Intent(Intent.ACTION_VIEW)
-                .setPackage("com.whatsapp.w4b")
-                .setData(
-                    Uri.parse(
-                        "https://api.whatsapp.com/send?phone=+52$phone&text=" + URLEncoder.encode(
-                            message,
-                            "UTF-8"
-                        )
-                    )
-                )
-        )
-    }
-
-    fun setMessage(tasks: List<Pair<String, String>>) {
-        startActivities(
-            tasks.map {
-                Intent(Intent.ACTION_VIEW)
-                    .setPackage("com.whatsapp.w4b")
-                    .setData(
-                        Uri.parse(
-                            "https://api.whatsapp.com/send?phone=+52${it.second}&text=" + URLEncoder.encode(
-                                it.first,
-                                "UTF-8"
-                            )
-                        )
-                    )
-            }.toTypedArray()
-        )
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount <= 1) {
+            finish()
+            startActivity(intent)
+            return
+        }
+        super.onBackPressed()
     }
 
     override fun openSaveDay() = nextFragment(SaveFormFragment())

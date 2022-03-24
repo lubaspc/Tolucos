@@ -1,13 +1,16 @@
 package com.lubaspc.traveltolucos.ui.fragment
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.lubaspc.traveltolucos.MTViewModel
+import com.lubaspc.traveltolucos.R
 import com.lubaspc.traveltolucos.databinding.FragmetHomeBinding
 import com.lubaspc.traveltolucos.ui.adapter.ChargesAdapter
 import com.lubaspc.traveltolucos.ui.adapter.PersonsAdapter
@@ -33,7 +36,15 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
+    }
 
+    private lateinit var dayRemoveSelect: Calendar
+
+    private val dialogDays by lazy {
+        AlertDialog.Builder(requireContext())
+            .setPositiveButton("Eliminar") { _, _ ->
+                vModel.removeDay(dayRemoveSelect)
+            }
     }
 
     private val vModel by activityViewModels<MTViewModel>()
@@ -64,20 +75,35 @@ class HomeFragment : Fragment() {
             vModel.createSaveFrom(adapterCharges.getChargesChecked())
             handler.openSaveDay()
         }
+        bottomAppBar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.m_remove_day -> {
+                    vModel.getDaysRegister()
+                }
+            }
+            return@setOnMenuItemClickListener true
+        }
     }.root
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        vModel.daysExist.observe(this) {
+            dialogDays.setSingleChoiceItems(
+                it.map { d -> d.parseDate() }.toTypedArray(), 0
+            ) { _, which ->
+                dayRemoveSelect = it[which]
+            }.show()
+        }
         vModel.persons.observe(this, adapterPersons::addPersons)
         vModel.charges.observe(this, adapterCharges::setCharges)
         vModel.dateSelected.observe(this) {
             vBind.dateSelect.text = it.parseDate()
         }
-
     }
 
-
-    interface HandlerHome{
+    interface HandlerHome {
         fun openSaveDay()
         fun openHistory()
     }

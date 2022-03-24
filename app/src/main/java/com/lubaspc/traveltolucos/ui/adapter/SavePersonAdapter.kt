@@ -58,7 +58,7 @@ class SavePersonAdapter : RecyclerView.Adapter<SavePersonAdapter.ViewHolder>() {
                             refreshTotal(tvTotalPay,it)
                         }
                     }
-                    ll.addView(vBindItem.root)
+                    ll.addView(vBindItem.root, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT))
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.lubaspc.traveltolucos
 
+import android.app.Person
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
@@ -27,6 +28,7 @@ class MTViewModel : ViewModel() {
     }
 
     val dateSelected = MutableLiveData(Calendar.getInstance())
+    val daysExist = MutableLiveData<List<Calendar>>()
     val charges = MutableLiveData<MutableList<ChargeMD>>()
     val persons = MutableLiveData<List<PersonMD>>()
     val personSave = MutableLiveData<List<PersonMD>>()
@@ -79,7 +81,7 @@ class MTViewModel : ViewModel() {
                         .map {
                             ChargeMD(
                                 0,
-                                it.caseta + " " + it.tramo,
+                                it.tramo,
                                 it.monto,
                                 1,
                                 TypeCharge.GROUP,
@@ -101,7 +103,7 @@ class MTViewModel : ViewModel() {
                         val monday = moveField(Calendar.MONDAY, true)
                         val sunday = moveField(Calendar.SUNDAY, next = true, addOne = true)
                         val days = history.filter { h -> h.chargePerson.day.into(monday, sunday) }
-                        val persons = history.groupBy { it.person }
+                        val persons = days.groupBy { it.person }
                         WeekModel(
                             monday,
                             sunday,
@@ -109,30 +111,34 @@ class MTViewModel : ViewModel() {
                             i > history.size - 1,
                             !persons.values.any { it.any { !it.chargePerson.pay } },
                             persons.map { group ->
-                                val daysPerson =
-                                    group.value.distinctBy { h -> h.chargePerson.day.parseDate() }
+                                val daysPerson = days.filter { it.person.name == group.key.name }
+                                if (group.key.name == "Charly") {
+                                    daysPerson.any { !it.chargePerson.pay }
+                                }
                                 PersonModel(
                                     group.key.name,
-                                    daysPerson.sumOf { h -> h.chargePerson.total },
-                                    daysPerson.map { dp ->
-                                        val personSize =
-                                            history.filter { h -> h.chargePerson.day == dp.chargePerson.day }
-                                                .distinctBy { it.person }.size
-                                        DayModel(
-                                            dp.chargePerson.day,
-                                            dp.chargePerson.total,
-                                            personSize,
-                                            daysPerson.filter { it.chargePerson.day.parseDate() == dp.chargePerson.day.parseDate() }
-                                                .map {
-                                                    ChargeModel(
-                                                        it.chargePerson.description,
-                                                        it.chargePerson.total,
-                                                        it.chargePerson.payment
-                                                    )
-                                                }
-                                        )
-                                    },
-                                    daysPerson.firstOrNull()?.chargePerson?.pay != true
+                                    group.key.phone,
+                                    daysPerson.sumOf { h -> h.chargePerson.payment },
+                                    !daysPerson.any { it.chargePerson.pay },
+                                    daysPerson.any { it.chargePerson.pay },
+                                    daysPerson.distinctBy { it.chargePerson.day.parseDate() }
+                                        .map { dp ->
+                                            DayModel(
+                                                dp.chargePerson.day,
+                                                daysPerson.filter { it.chargePerson.day.parseDate() == dp.chargePerson.day.parseDate() }
+                                                    .sumOf { it.chargePerson.payment },
+                                                dp.chargePerson.noPersons,
+                                                daysPerson.filter { it.chargePerson.day.parseDate() == dp.chargePerson.day.parseDate() }
+                                                    .map {
+                                                        ChargeModel(
+                                                            it.chargePerson.idChargePerson,
+                                                            it.chargePerson.description,
+                                                            it.chargePerson.total,
+                                                            it.chargePerson.payment
+                                                        )
+                                                    }
+                                            )
+                                        },
                                 )
                             },
                         )
@@ -140,6 +146,12 @@ class MTViewModel : ViewModel() {
                 }.distinctBy { it.monday }
                     .sortedByDescending { it.monday }
             )
+        }
+    }
+
+    fun getDaysRegister() {
+        viewModelScope.launch(Dispatchers.IO) {
+            daysExist.postValue(dao.getDisDays())
         }
     }
 
@@ -166,7 +178,7 @@ class MTViewModel : ViewModel() {
     }
 
     fun saveForm() {
-        val personsSize = personSave.value?.size ?: 0 + 1
+        val personsSize = (personSave.value?.size ?: 0) + 1
         viewModelScope.launch(Dispatchers.IO) {
             fun ChargeMD.getTotal() =
                 if (checked) total / (if (type == TypeCharge.GROUP) personsSize else 1)
@@ -189,20 +201,12 @@ class MTViewModel : ViewModel() {
         }
     }
 
-    fun confirmPay(days: List<ChargeDayMD>) {
+    fun confirmPay(person: PersonModel) {
         viewModelScope.launch(Dispatchers.IO) {
-            dao.updateDay(*days.map {
-                ChargePersonDb(
-                    it.idChargePerson,
-                    it.personIdFk,
-                    it.description,
-                    it.day,
-                    it.total,
-                    it.payment,
-                    it.noPersons,
-                    true
-                )
-            }.toTypedArray())
+            person.days.flatMap { it.charges }.distinctBy { it.idChargePerson }.forEach {
+                dao.updateChargePerson(true, it.idChargePerson)
+            }
+            consultHistory()
         }
     }
 
@@ -213,10 +217,17 @@ class MTViewModel : ViewModel() {
                     p.listCharges.clear()
                     p.listCharges.addAll(chargesDay.map { c -> c.copy() })
                     p.listCharges.addAll(
-                        charges.value?.filter { it.type == TypeCharge.PERSONAL } ?: listOf()
+                        charges.value?.filter { it.type == TypeCharge.PERSONAL }?.map { it.copy() }
+                            ?: listOf()
                     )
                 }
             }
+    }
+
+    fun removeDay(dayRemoveSelect: Calendar) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.deleteChargePerson(dayRemoveSelect)
+        }
     }
 
 }

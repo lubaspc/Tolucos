@@ -6,10 +6,10 @@ import androidx.databinding.BindingConversion
 import androidx.databinding.InverseBindingAdapter
 import com.lubaspc.traveltolucos.utils.formatPrice
 
-@InverseBindingAdapter(attribute = "total")
+@InverseBindingAdapter(attribute = "android:text")
 fun EditText.editText() = text.toString().replace("$","").toDoubleOrNull() ?: 0.0
 
-@BindingAdapter("total")
+@BindingAdapter("android:text")
 fun EditText.editText(total: Double?){
     setText(total?.formatPrice ?: "")
 }

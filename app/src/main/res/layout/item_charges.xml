@@ -16,6 +16,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cv"
             android:layout_width="match_parent"
+            android:minWidth="250dp"
             android:layout_height="wrap_content"
             app:checkedIconSize="0dp"
             android:checkable="true">
@@ -23,15 +24,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:divider="@drawable/ic_baseline_remove_24"
                 android:showDividers="middle"
+                android:layout_gravity="center"
+                android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
+                    android:textSize="18sp"
                     android:maxLines="3"
                     android:layout_marginTop="8dp"
                     android:textAlignment="center"
@@ -41,7 +43,6 @@
                     android:id="@+id/edit"
                     android:textSize="18sp"
                     android:layout_gravity="center"
-                    total="@={charge.total}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"/>

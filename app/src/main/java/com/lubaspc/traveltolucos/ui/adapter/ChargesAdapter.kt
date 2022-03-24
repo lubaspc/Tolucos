@@ -16,10 +16,17 @@ import com.lubaspc.traveltolucos.utils.formatPrice
 class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
 
     private val charges = mutableListOf<ChargeMD>()
-    private val textWachers = mutableListOf<Pair<TextView,TextWatcher>>()
+    private val textWachers = mutableListOf<Pair<TextView, TextWatcher>>()
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val vBind = ItemChargesBinding.bind(view)
+        var onTextChange: ((Double) -> Unit)? = null
+
+        init {
+            vBind.edit.addTextChangedListener {
+                onTextChange?.invoke(it?.toString()?.replace("$","")?.toDoubleOrNull() ?: 0.0)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -30,10 +37,8 @@ class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         charges[position].let {
             holder.vBind.apply {
-                if (textWachers.getOrNull(position) == null){
-                    textWachers.add(position,Pair(edit, edit.addTextChangedListener { edit ->
-                        it.total = edit?.toString()?.replace("$","")?.toDoubleOrNull() ?: 0.0
-                    }))
+                holder.onTextChange = { total ->
+                    it.total = total
                 }
                 edit.isEnabled = it.price == 0.0
                 edit.setText(it.total.formatPrice)
@@ -58,6 +63,6 @@ class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
-    fun getChargesChecked() = charges.filter { it.checked }
+    fun getChargesChecked() = charges.filter { it.checked }.map { it.copy() }
 
 }
