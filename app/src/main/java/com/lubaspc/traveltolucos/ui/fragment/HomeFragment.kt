@@ -84,6 +84,7 @@ class HomeFragment : Fragment() {
             handler.openSaveDay()
         }
         swipe.setOnRefreshListener {
+            llTags.removeAllViews()
             vModel.getAccountData()
         }
         bottomAppBar.setOnMenuItemClickListener {
@@ -98,12 +99,12 @@ class HomeFragment : Fragment() {
     @SuppressLint("CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       /* try {
-            Class.forName("com.lubaspc.traveltolucos.utils.ClassName")
-                .getMethod("static",Context::class.java,String::class.java)
-                .invoke(null,requireContext(),"Hola mundanos")
-        }catch (e: Exception){}
-*/
+        /* try {
+             Class.forName("com.lubaspc.traveltolucos.utils.ClassName")
+                 .getMethod("static",Context::class.java,String::class.java)
+                 .invoke(null,requireContext(),"Hola mundanos")
+         }catch (e: Exception){}
+ */
         vModel.accountData.observe(this) { user ->
             vBind.swipe.isRefreshing = false
             vBind.llTags.removeAllViews()

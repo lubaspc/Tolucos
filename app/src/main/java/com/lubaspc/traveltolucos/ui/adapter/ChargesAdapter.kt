@@ -16,7 +16,6 @@ import com.lubaspc.traveltolucos.utils.formatPrice
 class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
 
     private val charges = mutableListOf<ChargeMD>()
-    private val textWachers = mutableListOf<Pair<TextView, TextWatcher>>()
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val vBind = ItemChargesBinding.bind(view)
@@ -56,8 +55,6 @@ class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
 
     @SuppressLint("NotifyDataSetChanged")
     fun setCharges(charges: List<ChargeMD>) {
-        textWachers.forEach { it.first.removeTextChangedListener(it.second) }
-        textWachers.clear()
         this.charges.clear()
         this.charges.addAll(charges)
         notifyDataSetChanged()

@@ -76,21 +76,23 @@ class MTViewModel : ViewModel() {
         }.flatMap {
             it.data ?: listOf()
         }.also {
-            charges.postValue(charges.value?.apply {
-                addAll(0,
-                    it.filter { it.fecha.parseDate() == date.parseDate() }
-                        .map {
-                            ChargeMD(
-                                0,
-                                it.tramo,
-                                it.monto,
-                                1,
-                                TypeCharge.GROUP,
-                                it.monto,
-                                true
-                            )
-                        })
-            })
+            charges.postValue(
+                charges.value?.filter { it.id != 0L }
+                    ?.toMutableList()?.apply {
+                        addAll(0,
+                            it.filter { it.fecha.parseDate() == date.parseDate() }
+                                .map {
+                                    ChargeMD(
+                                        0,
+                                        it.tramo,
+                                        it.monto,
+                                        1,
+                                        TypeCharge.GROUP,
+                                        it.monto,
+                                        true
+                                    )
+                                })
+                    })
         })
     }
 
