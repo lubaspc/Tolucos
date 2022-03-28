@@ -28,4 +28,14 @@
     <style name="Theme.TravelTolucos.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.TravelTolucos.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <style name="ActivityTransparent" parent="Theme.TravelTolucos">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
 </resources>

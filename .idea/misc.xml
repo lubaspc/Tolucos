@@ -9,11 +9,15 @@
         <entry key="../../../../layout/compose-model-1637615720368.xml" value="1.8736462093862816" />
         <entry key="../../../../layout/compose-model-1637615957497.xml" value="0.33826013513513514" />
         <entry key="../../../../layout/compose-model-1637618201821.xml" value="0.33" />
+        <entry key="app/src/main/res/drawable-v21/app_widget_background.xml" value="0.371875" />
+        <entry key="app/src/main/res/drawable-v21/app_widget_inner_view_background.xml" value="0.371875" />
         <entry key="app/src/main/res/drawable/ic_baseline_remove_24.xml" value="0.22395833333333334" />
+        <entry key="app/src/main/res/layout/app_widget.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/fragment_save_form.xml" value="0.19895833333333332" />
         <entry key="app/src/main/res/layout/fragmet_home.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/item_charge_day.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/item_charges.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/widget_tag.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/menu/bottom_app_bar.xml" value="0.19895833333333332" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3859375" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3859375" />

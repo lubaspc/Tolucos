@@ -1,8 +1,5 @@
 package com.lubaspc.traveltolucos
 
-import android.app.Person
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -61,6 +58,10 @@ class MTViewModel : ViewModel() {
                 getMovements(accountData.value?.tags, it)
             }
         }
+        getAccountData()
+    }
+
+    fun getAccountData() {
         viewModelScope.launch(Dispatchers.IO) {
             accountData.postValue(repository.getAccount().data.also {
                 getMovements(it?.tags, dateSelected.value!!)
