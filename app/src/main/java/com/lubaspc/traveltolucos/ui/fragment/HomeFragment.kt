@@ -17,6 +17,7 @@ import com.lubaspc.traveltolucos.App
 import com.lubaspc.traveltolucos.MTViewModel
 import com.lubaspc.traveltolucos.R
 import com.lubaspc.traveltolucos.databinding.FragmetHomeBinding
+import com.lubaspc.traveltolucos.room.TypeCharge
 import com.lubaspc.traveltolucos.ui.adapter.ChargesAdapter
 import com.lubaspc.traveltolucos.ui.adapter.PersonsAdapter
 import com.lubaspc.traveltolucos.utils.parseDate
@@ -131,7 +132,9 @@ class HomeFragment : Fragment() {
             }.show()
         }
         vModel.persons.observe(this, adapterPersons::addPersons)
-        vModel.charges.observe(this, adapterCharges::setCharges)
+        vModel.charges.observe(this){
+            adapterCharges.setCharges(it.filter { it.type == TypeCharge.GROUP })
+        }
         vModel.dateSelected.observe(this) {
             vBind.dateSelect.text = it.parseDate()
         }

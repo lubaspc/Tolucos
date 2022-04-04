@@ -160,11 +160,7 @@ class MTViewModel : ViewModel() {
 
     private fun getPerson() {
         viewModelScope.launch(Dispatchers.IO) {
-            persons.postValue(dao.getPerson().map {
-                it.toMd.apply {
-                    checked = dayChanger.value?.any { day -> day.personIdFk == it.personId } == true
-                }
-            })
+            persons.postValue(dao.getPerson().map {it.toMd })
         }
 
     }
@@ -172,11 +168,9 @@ class MTViewModel : ViewModel() {
 
     private fun getCharges() {
         viewModelScope.launch(Dispatchers.IO) {
-            charges.postValue(dao.getCharges().map {
-                it.toMd.apply {
-                    checked = dayChanger.value?.any { day -> day.chargeId == it.chargeId } == true
-                }
-            }.toMutableList())
+            charges.postValue(dao.getCharges()
+                .map { it.toMd }
+                .toMutableList())
         }
     }
 

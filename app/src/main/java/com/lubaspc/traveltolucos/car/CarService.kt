@@ -21,16 +21,15 @@ import kotlinx.coroutines.withContext
 class CarService : CarAppService() {
 
     override fun createHostValidator() =
-        HostValidator.Builder(this)
-            .build()
+        HostValidator.ALLOW_ALL_HOSTS_VALIDATOR
 
     override fun onCreateSession() = MyCarSession()
 
     class MyCarSession : Session() {
+
         private val repository by lazy {
             RetrofitService()
         }
-
 
         override fun onCreateScreen(intent: Intent) = MyCarScreen(carContext, repository)
     }

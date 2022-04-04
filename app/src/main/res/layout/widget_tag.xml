@@ -15,7 +15,6 @@
         android:id="@+id/tag_widget_iv"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        app:tint="@color/white"
         tools:src="@drawable/ic_baseline_check_circle_outline_24"
         />
 

@@ -4,6 +4,8 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.lubaspc.traveltolucos.service.model.Tag
 
+
+
 fun SharedPreferences.saveTags(tags: List<Tag>) {
     edit {
         putStringSet(

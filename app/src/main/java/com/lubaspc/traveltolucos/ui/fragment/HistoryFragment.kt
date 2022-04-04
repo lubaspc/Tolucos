@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.lubaspc.traveltolucos.MTViewModel
 import com.lubaspc.traveltolucos.databinding.FragmentHistoryBinding
 import com.lubaspc.traveltolucos.model.ChargeDayMD
@@ -36,6 +37,7 @@ import java.net.URLEncoder
 class HistoryFragment : Fragment() {
     private val vModel by activityViewModels<MTViewModel>()
     private val weekState = mutableStateListOf<WeekModel>()
+    private lateinit var refresh: SwipeRefreshLayout
 
     @ExperimentalFoundationApi
     @ExperimentalMaterialApi
@@ -45,23 +47,30 @@ class HistoryFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(
-            ViewCompositionStrategy.DisposeOnLifecycleDestroyed(
-                viewLifecycleOwner
+    ) =SwipeRefreshLayout(requireContext()).apply {
+        refresh = this
+        isRefreshing = true
+
+        this.setOnRefreshListener(vModel::consultHistory)
+        addView(ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnLifecycleDestroyed(
+                    viewLifecycleOwner
+                )
             )
-        )
-        setContent {
-            MaterialTheme(
-                colors = lightColors(
-                    primary = Purple500,
-                    primaryVariant = Purple700,
-                    secondary = Teal200
-                ),
-                content = { WeekView(weeks = weekState) }
-            )
-        }
+            setContent {
+                MaterialTheme(
+                    colors = lightColors(
+                        primary = Purple500,
+                        primaryVariant = Purple700,
+                        secondary = Teal200
+                    ),
+                    content = { WeekView(weeks = weekState) }
+                )
+            }
+        })
     }
+
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,16 +78,17 @@ class HistoryFragment : Fragment() {
         vModel.weeks.observe(this) {
             weekState.clear()
             weekState.addAll(it)
+            refresh.isRefreshing = false
         }
     }
 
     private val PersonModel.message: String
-        get() = "*Total Semana $${total.formatPrice}*\n${
-            days.joinToString("\n ") {
-                "${it.day.parseDate()}: ${it.total.formatPrice}\n${
+        get() = "*Total Semana ${total.formatPrice}*\n\n${
+            days.joinToString("\n") {
+                "*${it.day.parseDate()}*: ${it.total.formatPrice}\n${
                     it.charges.joinToString(
-                        "\n  "
-                    ) { "${it.description.take(5)}: $${it.total.formatPrice} = ${it.payment.formatPrice}" }
+                        "\n"
+                    ) { "*->* ${it.description.take(12)}: ${it.total.formatPrice} = ${it.payment.formatPrice}" }
                 }"
             }
         }"

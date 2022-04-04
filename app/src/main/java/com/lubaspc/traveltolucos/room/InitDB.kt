@@ -13,7 +13,7 @@ class InitDB {
         fun insertInitialDB(scope: CoroutineScope) {
             scope.launch {
                 withContext(Dispatchers.IO) {
-                    DBRoom.db.dbDao().deleteChargePerson()
+                    //DBRoom.db.dbDao().deleteChargePerson()
                     DBRoom.db.dbDao().apply {
                         insertCharge(
                             ChargeDb(
@@ -37,7 +37,7 @@ class InitDB {
                         )
                         insertCharge(
                             ChargeDb(
-                                12,
+                                13,
                                 "Otro",
                                 0.0,
                                 1,

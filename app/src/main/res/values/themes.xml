@@ -38,4 +38,9 @@
         <item name="android:windowIsFloating">true</item>
     </style>
 
+    <style name="Theme.AppWidget.AppWidgetContainer"
+        parent="Theme.Material3.DynamicColors.DayNight" >
+        <item name="android:background">?android:attr/colorBackground</item>
+    </style>
+
 </resources>
