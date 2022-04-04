@@ -15,12 +15,14 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.lubaspc.traveltolucos.MTViewModel
 import com.lubaspc.traveltolucos.databinding.FragmentHistoryBinding
 import com.lubaspc.traveltolucos.model.ChargeDayMD
@@ -37,7 +39,7 @@ import java.net.URLEncoder
 class HistoryFragment : Fragment() {
     private val vModel by activityViewModels<MTViewModel>()
     private val weekState = mutableStateListOf<WeekModel>()
-    private lateinit var refresh: SwipeRefreshLayout
+    val refreshing = SwipeRefreshState(true)
 
     @ExperimentalFoundationApi
     @ExperimentalMaterialApi
@@ -47,28 +49,27 @@ class HistoryFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =SwipeRefreshLayout(requireContext()).apply {
-        refresh = this
-        isRefreshing = true
-
-        this.setOnRefreshListener(vModel::consultHistory)
-        addView(ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnLifecycleDestroyed(
-                    viewLifecycleOwner
-                )
+    ) = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnLifecycleDestroyed(
+                viewLifecycleOwner
             )
-            setContent {
-                MaterialTheme(
-                    colors = lightColors(
-                        primary = Purple500,
-                        primaryVariant = Purple700,
-                        secondary = Teal200
-                    ),
-                    content = { WeekView(weeks = weekState) }
-                )
-            }
-        })
+        )
+        setContent {
+            MaterialTheme(
+                colors = lightColors(
+                    primary = Purple500,
+                    primaryVariant = Purple700,
+                    secondary = Teal200
+                ),
+                content = { WeekView(weeks = weekState) }
+            )
+        }
+    }
+
+    fun refreshHistory(){
+        refreshing.isRefreshing = true
+        vModel.consultHistory()
     }
 
 
@@ -78,7 +79,7 @@ class HistoryFragment : Fragment() {
         vModel.weeks.observe(this) {
             weekState.clear()
             weekState.addAll(it)
-            refresh.isRefreshing = false
+            refreshing.isRefreshing = false
         }
     }
 
