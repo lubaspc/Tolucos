@@ -1,5 +1,6 @@
 package com.lubaspc.traveltolucos
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,8 @@ import com.lubaspc.traveltolucos.service.RetrofitService
 import com.lubaspc.traveltolucos.service.model.Movimiento
 import com.lubaspc.traveltolucos.service.model.Tag
 import com.lubaspc.traveltolucos.service.model.Usuario
+import com.lubaspc.traveltolucos.service.telegramBot.BotRepository
+import com.lubaspc.traveltolucos.service.telegramBot.models.EntityMessageRequest
 import com.lubaspc.traveltolucos.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,6 +25,9 @@ class MTViewModel : ViewModel() {
     }
     private val repository by lazy {
         RetrofitService()
+    }
+    private val repositoryBotT by lazy {
+        BotRepository()
     }
 
     val dateSelected = MutableLiveData(Calendar.getInstance())
@@ -100,6 +106,7 @@ class MTViewModel : ViewModel() {
     fun consultHistory() {
         viewModelScope.launch(Dispatchers.IO) {
             val history = dao.getDays()
+
             weeks.postValue(
                 history.mapIndexed { i, d ->
                     d.chargePerson.day.moveField(Calendar.SUNDAY).run {
@@ -160,7 +167,7 @@ class MTViewModel : ViewModel() {
 
     private fun getPerson() {
         viewModelScope.launch(Dispatchers.IO) {
-            persons.postValue(dao.getPerson().map {it.toMd })
+            persons.postValue(dao.getPerson().map { it.toMd })
         }
 
     }
@@ -224,6 +231,23 @@ class MTViewModel : ViewModel() {
     fun removeDay(dayRemoveSelect: Calendar) {
         viewModelScope.launch(Dispatchers.IO) {
             dao.deleteChargePerson(dayRemoveSelect)
+        }
+    }
+
+    fun consultPlusWeek() {
+
+    }
+
+    fun sendMessage(message: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (repositoryBotT.sendMessage(
+                    message
+                ).data?.ok == true
+            ) {
+                Log.d("HOLA MUNOD", "YESR")
+            } else
+                Log.d("HOLA MUNOD", "NOT")
+
         }
     }
 

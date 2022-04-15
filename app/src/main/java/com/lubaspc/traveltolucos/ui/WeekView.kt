@@ -5,13 +5,12 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -28,17 +27,57 @@ import com.lubaspc.traveltolucos.utils.formatPrice
 import com.lubaspc.traveltolucos.utils.into
 import com.lubaspc.traveltolucos.utils.moveField
 import com.lubaspc.traveltolucos.utils.parseDate
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import java.util.*
 
 val Purple500 = Color(0xff62727b)
 val Purple700 = Color(0xffb71c1c)
 val Teal200 = Color(0xFF03DAC5)
 
+@InternalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
 @Composable
+fun LazyListState.OnBottomReached(
+    loadMore: () -> Unit
+) {
+    val shouldLoadMore = remember {
+        derivedStateOf {
+
+            // get last visible item
+            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
+                ?:
+                // list is empty
+                // return false here if loadMore should not be invoked if the list is empty
+                return@derivedStateOf true
+
+            // Check if last visible item is the last item in the list
+            lastVisibleItem.index == layoutInfo.totalItemsCount - 1
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        snapshotFlow { shouldLoadMore.value }
+            .onEach {
+                if (it) loadMore()
+                // if should load more, then invoke loadMore
+            }
+    }
+}
+
+@ExperimentalFoundationApi
+@OptIn(ExperimentalAnimationApi::class)
+@InternalCoroutinesApi
+@ExperimentalMaterialApi
+@Composable
 fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
+    val rememberState = rememberLazyListState()
+    rememberState.OnBottomReached {
+        vModel.consultPlusWeek()
+    }
     Scaffold(
         backgroundColor = colorResource(id = R.color.black)
     ) {
@@ -47,7 +86,8 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                 modifier = Modifier
                     .padding(12.dp)
                     .fillMaxWidth()
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                state = rememberState
             ) {
                 itemsIndexed(weeks) { i, week ->
                     val showWeek = remember { mutableStateOf(i == 0) }
@@ -64,17 +104,20 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                 } else showWeek.value = !showWeek.value
                             }
                         ) {
-                            Row {
-                                Icon(
-                                    Icons.Default.CheckCircle,
-                                    contentDescription = null,
-                                    tint = colorResource(if (week.completePay) R.color.green else R.color.white)
-                                )
-                                textTitle(week.monday.parseDate("dd") + "-" + week.sunday.parseDate())
-                                Spacer(Modifier.weight(1f, true))
-                                textTitle("Total ${week.totalWeek.formatPrice}")
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(12.dp,0.dp)
+                            ) {
+                            Icon(
+                                Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = colorResource(if (week.completePay) R.color.green else R.color.white)
+                            )
+                            textTitle(week.monday.parseDate("dd") + "-" + week.sunday.parseDate())
+                            Spacer(Modifier.weight(1f, true))
+                            textTitle("Total ${week.totalWeek.formatPrice}")
 
-                            }
+                        }
                         }
                         Spacer(modifier = Modifier.height(1.dp))
                         if (showWeek.value) {
@@ -88,7 +131,10 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                         .fillMaxWidth(),
                                     elevation = 10.dp,
                                     backgroundColor = colorResource(id = R.color.purple_dark),
-                                    border = BorderStroke(1.dp, colorResource(id = R.color.teal_700)),
+                                    border = BorderStroke(
+                                        1.dp,
+                                        colorResource(id = R.color.teal_700)
+                                    ),
                                     contentColor = colorResource(id = R.color.white),
                                     onClick = {
                                         if (showPerson.value && !p.completePay)
@@ -117,9 +163,18 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                             p.days.map { d ->
                                                 Divider(color = colorResource(id = R.color.teal_700))
                                                 Row {
-                                                    textTitle(d.day.parseDate(), Modifier.weight(2f))
-                                                    textTitle(d.total.formatPrice, Modifier.weight(1f))
-                                                    textTitle("P. ${d.noPersons}", Modifier.weight(1f))
+                                                    textTitle(
+                                                        d.day.parseDate(),
+                                                        Modifier.weight(2f)
+                                                    )
+                                                    textTitle(
+                                                        d.total.formatPrice,
+                                                        Modifier.weight(1f)
+                                                    )
+                                                    textTitle(
+                                                        "P. ${d.noPersons}",
+                                                        Modifier.weight(1f)
+                                                    )
                                                 }
                                                 Divider(color = colorResource(id = R.color.teal_700))
                                                 d.charges.map { c ->
@@ -152,6 +207,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
         }
 
     }
+
 
 }
 

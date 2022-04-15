@@ -74,7 +74,6 @@ class HomeFragment : Fragment() {
         rvPersons.adapter = adapterPersons
         rvCharge.adapter = adapterCharges
         bottomAppBar.setNavigationOnClickListener {
-            vModel.consultHistory()
             handler.openHistory()
         }
         dateSelect.setOnClickListener {
@@ -119,8 +118,8 @@ class HomeFragment : Fragment() {
                     chipStartPadding = 24f
                     chipStrokeWidth = 1f
                     setChipBackgroundColorResource(R.color.purple_700)
-                    setChipIconResource(R.drawable.ic_baseline_check_circle_24)
-                    setChipIconTintResource(if (it.isActivo) R.color.white else R.color.black)
+                    setChipIconTintResource(R.color.white)
+                    setChipIconResource( if (it.isActivo) R.drawable.ic_baseline_check_circle_24 else R.drawable.ic_baseline_remove_circle_outline_24)
                 })
             }
         }

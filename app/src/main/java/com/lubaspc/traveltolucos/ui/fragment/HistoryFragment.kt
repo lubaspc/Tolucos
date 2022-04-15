@@ -33,14 +33,19 @@ import com.lubaspc.traveltolucos.ui.Purple700
 import com.lubaspc.traveltolucos.ui.Teal200
 import com.lubaspc.traveltolucos.ui.WeekView
 import com.lubaspc.traveltolucos.utils.formatPrice
+import com.lubaspc.traveltolucos.utils.generateQR
+import com.lubaspc.traveltolucos.utils.moveField
 import com.lubaspc.traveltolucos.utils.parseDate
+import kotlinx.coroutines.InternalCoroutinesApi
 import java.net.URLEncoder
+import java.util.*
 
 class HistoryFragment : Fragment() {
-    private val vModel by activityViewModels<MTViewModel>()
+    val vModel by activityViewModels<MTViewModel>()
     private val weekState = mutableStateListOf<WeekModel>()
     val refreshing = SwipeRefreshState(true)
 
+    @InternalCoroutinesApi
     @ExperimentalFoundationApi
     @ExperimentalMaterialApi
     @ExperimentalAnimationApi
@@ -67,7 +72,7 @@ class HistoryFragment : Fragment() {
         }
     }
 
-    fun refreshHistory(){
+    fun refreshHistory() {
         refreshing.isRefreshing = true
         vModel.consultHistory()
     }
@@ -83,37 +88,36 @@ class HistoryFragment : Fragment() {
         }
     }
 
-    private val PersonModel.message: String
-        get() = "*Total Semana ${total.formatPrice}*\n\n${
+    private val PersonModel.BotTmessage: String
+        get() = "<b>Total Semana ${total.formatPrice}</b>\n\n${
             days.joinToString("\n") {
-                "*${it.day.parseDate()}*: ${it.total.formatPrice}\n${
+                "<b>${it.day.parseDate()}</b>: ${it.total.formatPrice}\n${
                     it.charges.joinToString(
                         "\n"
-                    ) { "*->* ${it.description.take(12)}: ${it.total.formatPrice} = ${it.payment.formatPrice}" }
+                    ) { "<b>-></b> ${it.description.take(12)}: ${it.total.formatPrice} = ${it.payment.formatPrice}" }
                 }"
             }
-        }"
-
-    private val PersonModel.intent: Intent
-        get() = Intent(Intent.ACTION_VIEW)
-            .setPackage("com.whatsapp.w4b")
-            .setData(
-                Uri.parse(
-                    "https://api.whatsapp.com/send?phone=+52${phone}&text=${
-                        URLEncoder.encode(message, "UTF-8")
-                    }"
-                )
-            )
+        }".run {
+            val weeksDeuda =
+                vModel.weeks.value?.flatMap { w -> w.persons.filter { it.person == person && !it.completePay && it != this@BotTmessage } }
+            var headerString = ""
+            if (!weeksDeuda.isNullOrEmpty()) {
+                headerString =
+                    "<b>Montos de semanas anteriores</b>\n${weeksDeuda.joinToString("\n") { "<b>-> ${it.total.formatPrice}</b>" }}" +
+                            "\n- - - - - - - - - - - - - - - - -\n"
+            }
+            val qr = generateQR(total + (weeksDeuda?.sumOf { it.total } ?: 0.0))
+            return@run "$headerString$this\n- - - - - - - - - - - - - - - - -\n" +
+                    "<a href=\"google.com\">Banco Azteca</a>\n\n"
+//                    "<a href=\"baz://send_money/$qr/\">Baz</a>"
+        }
 
     fun sendMessageWeekPerson(person: PersonModel) {
-        if (context == null) return
-        startActivity(person.intent)
-
+        vModel.sendMessage(person.BotTmessage)
     }
 
     fun sendMessageWeek(week: WeekModel) {
-        if (context == null) return
-        context?.startActivities(week.persons.map { it.intent }.toTypedArray())
+        week.persons.forEach { vModel.sendMessage(it.BotTmessage) }
     }
 
     fun showDialogChagePay(person: PersonModel) {

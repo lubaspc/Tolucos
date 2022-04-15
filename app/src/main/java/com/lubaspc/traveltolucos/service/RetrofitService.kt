@@ -33,6 +33,7 @@ class RetrofitService {
     private var clientId: Long = 35497193
     private var user = "7225530820"
     private var pass = "5822772lpc"
+
     private var headersCookie =
         App.sharedPreferences.getStringSet(
             App.COOKIES,
