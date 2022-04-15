@@ -108,7 +108,7 @@ class HistoryFragment : Fragment() {
             }
             val qr = generateQR(total + (weeksDeuda?.sumOf { it.total } ?: 0.0))
             return@run "$headerString$this\n- - - - - - - - - - - - - - - - -\n" +
-                    "<a href=\"google.com\">Banco Azteca</a>\n\n"
+                    "<a href=\"aztecapay://?$qr/\">Banco Azteca</a>\n\n"
 //                    "<a href=\"baz://send_money/$qr/\">Baz</a>"
         }
 
