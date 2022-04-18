@@ -11,11 +11,13 @@ class App : Application() {
     companion object {
         lateinit var sharedPreferences: SharedPreferences
         const val COOKIES = "COOKIES"
+        lateinit var dirCache: File
 
     }
 
     override fun onCreate() {
         super.onCreate()
+        dirCache = cacheDir
         sharedPreferences = getSharedPreferences("Travels", Context.MODE_PRIVATE)
         DBRoom.db = Room.databaseBuilder(
             applicationContext,

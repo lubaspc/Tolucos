@@ -4,7 +4,7 @@ package com.lubaspc.traveltolucos.service.telegramBot.models
 import com.google.gson.annotations.SerializedName
 import com.google.gson.annotations.Expose
 
-data class TBotSendMessaeResponse(
+data class TBotSendPhotoResponse(
     @SerializedName("ok")
     @Expose
     var ok: Boolean,
@@ -13,6 +13,9 @@ data class TBotSendMessaeResponse(
     var result: TBotResultResponse
 ) {
     data class TBotResultResponse(
+        @SerializedName("caption")
+        @Expose
+        var caption: String,
         @SerializedName("chat")
         @Expose
         var chat: TBotChatResponse,
@@ -25,9 +28,9 @@ data class TBotSendMessaeResponse(
         @SerializedName("message_id")
         @Expose
         var messageId: String,
-        @SerializedName("text")
+        @SerializedName("photo")
         @Expose
-        var text: String
+        var photo: List<TBotPhotoResponse>
     ) {
         data class TBotChatResponse(
             @SerializedName("id")
@@ -54,6 +57,24 @@ data class TBotSendMessaeResponse(
             @SerializedName("username")
             @Expose
             var username: String
+        )
+
+        data class TBotPhotoResponse(
+            @SerializedName("file_id")
+            @Expose
+            var fileId: String,
+            @SerializedName("file_size")
+            @Expose
+            var fileSize: Int,
+            @SerializedName("file_unique_id")
+            @Expose
+            var fileUniqueId: String,
+            @SerializedName("height")
+            @Expose
+            var height: Int,
+            @SerializedName("width")
+            @Expose
+            var width: Int
         )
     }
 }

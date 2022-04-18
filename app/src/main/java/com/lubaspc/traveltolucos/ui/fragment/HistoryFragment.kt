@@ -2,6 +2,7 @@ package com.lubaspc.traveltolucos.ui.fragment
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
@@ -24,6 +25,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.lubaspc.traveltolucos.MTViewModel
+import com.lubaspc.traveltolucos.R
 import com.lubaspc.traveltolucos.databinding.FragmentHistoryBinding
 import com.lubaspc.traveltolucos.model.ChargeDayMD
 import com.lubaspc.traveltolucos.model.PersonModel
@@ -32,10 +34,7 @@ import com.lubaspc.traveltolucos.ui.Purple500
 import com.lubaspc.traveltolucos.ui.Purple700
 import com.lubaspc.traveltolucos.ui.Teal200
 import com.lubaspc.traveltolucos.ui.WeekView
-import com.lubaspc.traveltolucos.utils.formatPrice
-import com.lubaspc.traveltolucos.utils.generateQR
-import com.lubaspc.traveltolucos.utils.moveField
-import com.lubaspc.traveltolucos.utils.parseDate
+import com.lubaspc.traveltolucos.utils.*
 import kotlinx.coroutines.InternalCoroutinesApi
 import java.net.URLEncoder
 import java.util.*
@@ -88,40 +87,9 @@ class HistoryFragment : Fragment() {
         }
     }
 
-    private val PersonModel.BotTmessage: String
-        get() = "<b>Total Semana ${total.formatPrice}</b>\n\n${
-            days.joinToString("\n") {
-                "<b>${it.day.parseDate()}</b>: ${it.total.formatPrice}\n${
-                    it.charges.joinToString(
-                        "\n"
-                    ) { "<b>-></b> ${it.description.take(12)}: ${it.total.formatPrice} = ${it.payment.formatPrice}" }
-                }"
-            }
-        }".run {
-            val weeksDeuda =
-                vModel.weeks.value?.flatMap { w -> w.persons.filter { it.person == person && !it.completePay && it != this@BotTmessage } }
-            var headerString = ""
-            if (!weeksDeuda.isNullOrEmpty()) {
-                headerString =
-                    "<b>Montos de semanas anteriores</b>\n${weeksDeuda.joinToString("\n") { "<b>-> ${it.total.formatPrice}</b>" }}" +
-                            "\n- - - - - - - - - - - - - - - - -\n"
-            }
-            val qr = generateQR(total + (weeksDeuda?.sumOf { it.total } ?: 0.0))
-            return@run "$headerString$this\n- - - - - - - - - - - - - - - - -\n" +
-                    "<a href=\"aztecapay://?$qr/\">Banco Azteca</a>\n\n"
-//                    "<a href=\"baz://send_money/$qr/\">Baz</a>"
-        }
-
-    fun sendMessageWeekPerson(person: PersonModel) {
-        vModel.sendMessage(person.BotTmessage)
-    }
-
-    fun sendMessageWeek(week: WeekModel) {
-        week.persons.forEach { vModel.sendMessage(it.BotTmessage) }
-    }
-
     fun showDialogChagePay(person: PersonModel) {
         if (context == null) return
+        val imgPay = BitmapFactory.decodeResource(requireActivity().resources, R.drawable.pagado).convertToFile()
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setTitle("Confirmar pago")
             .setMessage(
@@ -129,8 +97,7 @@ class HistoryFragment : Fragment() {
             )
             .setPositiveButton("PAGAR") { d, _ ->
                 d.dismiss()
-                vModel.confirmPay(person)
-
+                vModel.confirmPay(person,imgPay)
             }.show()
     }
 }

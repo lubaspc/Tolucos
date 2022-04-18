@@ -40,6 +40,12 @@ import java.net.URLEncoder
 class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome, SaveFormFragment.HandlerForm {
 
     private val vModel: MTViewModel by viewModels()
+    private val progress by lazy {
+        ProgressDialog(this)
+            .apply {
+                setTitle("Cargando datos")
+            }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +53,14 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome, SaveFormFrag
         nextFragment(HomeFragment())
         vModel.consultHistory()
         //InitDB.insertInitialDB(lifecycleScope)
+        vModel.showProgress.observe(this){
+            if (it && !progress.isShowing) {
+                progress.show()
+            }
+            if (!it && progress.isShowing){
+                progress.dismiss()
+            }
+        }
     }
 
     private fun nextFragment(fragment: Fragment) {

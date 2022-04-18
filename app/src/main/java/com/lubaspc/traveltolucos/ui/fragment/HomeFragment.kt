@@ -124,6 +124,7 @@ class HomeFragment : Fragment() {
             }
         }
         vModel.daysExist.observe(this) {
+            dayRemoveSelect = it.firstOrNull() ?: return@observe
             dialogDays.setSingleChoiceItems(
                 it.map { d -> d.parseDate() }.toTypedArray(), 0
             ) { _, which ->

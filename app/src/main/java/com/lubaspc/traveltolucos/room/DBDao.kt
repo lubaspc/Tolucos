@@ -42,6 +42,9 @@ interface DBDao{
     @Query("update ChargePersonDb set pay = :pay where idChargePerson = :id")
     fun updateChargePerson(pay: Boolean,id: Long)
 
+    @Query("update ChargePersonDb set idMessage = :idMessage where idChargePerson in (:ids)")
+    fun saveMessageId(idMessage: String?,ids: List<Long>)
+
     @Query("DELETE FROM ChargePersonDb")
     fun deleteChargePerson()
 

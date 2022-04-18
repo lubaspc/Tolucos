@@ -7,12 +7,18 @@ import com.lubaspc.traveltolucos.App
 import com.lubaspc.traveltolucos.service.GenericResponse
 import com.lubaspc.traveltolucos.service.PaseTagService
 import com.lubaspc.traveltolucos.service.telegramBot.models.EntityMessageRequest
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.lang.Exception
 import java.lang.reflect.Type
 import java.text.ParseException
@@ -35,7 +41,7 @@ class BotRepository {
 
         Retrofit.Builder()
             .client(okHttpClient.build())
-            .baseUrl("https://api.telegram.org/bot5363190935:AAFjkgFaJVjqvEbU-C6WuBOexVXK65ZlPhU/")
+            .baseUrl("https://api.telegram.org/bot$botToken/")
             .addConverterFactory(
                 GsonConverterFactory.create(
                     GsonBuilder()
@@ -81,6 +87,42 @@ class BotRepository {
 
     suspend fun getMe() = onResponse { api.getMe() }
 
-    suspend fun sendMessage(message: String,idGroup: String = groupId) =
+    suspend fun sendMessage(message: String, idGroup: String = groupId) =
         onResponse { api.sendMessage(idGroup, message) }
+
+    suspend fun editMessage(
+        photo: File,
+        message: String,
+        messageId: String,
+        idGroup: String = groupId
+    ) =
+        onResponse {
+            api.editMessagePhoto(
+                MultipartBody.Part.createFormData(
+                    "photo", photo.name, photo.asRequestBody("image/png".toMediaType())
+                ),
+                JsonObject().apply {
+                    addProperty("type", "photo")
+                    addProperty("media", "attach://photo")
+                    addProperty("caption", message)
+                    addProperty("parse_mode", "HTML")
+                },
+                idGroup,
+                messageId,
+            )
+        }
+
+
+    suspend fun sendPhoto(photo: File, caption: String, parseMode: String = "HTML") =
+        onResponse {
+            api.sendPhoto(
+                MultipartBody.Part.createFormData(
+                    "photo", photo.name, photo.asRequestBody("image/png".toMediaType())
+                ),
+                groupId,
+                caption,
+                parseMode
+            )
+        }
+
 }

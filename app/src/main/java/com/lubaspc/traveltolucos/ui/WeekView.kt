@@ -100,7 +100,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                             border = BorderStroke(1.dp, colorResource(id = R.color.teal_700)),
                             onClick = {
                                 if (showWeek.value && !week.completePay) {
-                                    this@WeekView.sendMessageWeek(week)
+                                    vModel.sendMessage(*week.persons.toTypedArray())
                                 } else showWeek.value = !showWeek.value
                             }
                         ) {
@@ -138,7 +138,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                     contentColor = colorResource(id = R.color.white),
                                     onClick = {
                                         if (showPerson.value && !p.completePay)
-                                            this@WeekView.sendMessageWeekPerson(p)
+                                            vModel.sendMessage(p)
                                         else showPerson.value = !showPerson.value
                                     }
                                 ) {

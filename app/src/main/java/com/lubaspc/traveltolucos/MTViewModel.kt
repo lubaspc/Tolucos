@@ -1,5 +1,6 @@
 package com.lubaspc.traveltolucos
 
+import android.R.attr
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +19,22 @@ import com.lubaspc.traveltolucos.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
+import com.google.zxing.WriterException
+
+import android.R.attr.bitmap
+import android.R.attr.shortcutDisabledMessage
+
+import android.R.dimen
+import android.graphics.BitmapFactory
+
+import androidmads.library.qrgenearator.QRGContents
+
+import androidmads.library.qrgenearator.QRGEncoder
+import okhttp3.MultipartBody
+
+import okhttp3.RequestBody
+import java.io.File
+
 
 class MTViewModel : ViewModel() {
     private val dao by lazy {
@@ -30,6 +47,8 @@ class MTViewModel : ViewModel() {
         BotRepository()
     }
 
+
+    val showProgress = MutableLiveData(false)
     val dateSelected = MutableLiveData(Calendar.getInstance())
     val daysExist = MutableLiveData<List<Calendar>>()
     val charges = MutableLiveData<MutableList<ChargeMD>>()
@@ -104,9 +123,9 @@ class MTViewModel : ViewModel() {
 
 
     fun consultHistory() {
+        showProgress.postValue(true)
         viewModelScope.launch(Dispatchers.IO) {
             val history = dao.getDays()
-
             weeks.postValue(
                 history.mapIndexed { i, d ->
                     d.chargePerson.day.moveField(Calendar.SUNDAY).run {
@@ -142,6 +161,7 @@ class MTViewModel : ViewModel() {
                                                     .map {
                                                         ChargeModel(
                                                             it.chargePerson.idChargePerson,
+                                                            it.chargePerson.idMessage,
                                                             it.chargePerson.description,
                                                             it.chargePerson.total,
                                                             it.chargePerson.payment
@@ -156,6 +176,7 @@ class MTViewModel : ViewModel() {
                 }.distinctBy { it.monday }
                     .sortedByDescending { it.monday }
             )
+            showProgress.postValue(false)
         }
     }
 
@@ -205,11 +226,19 @@ class MTViewModel : ViewModel() {
         }
     }
 
-    fun confirmPay(person: PersonModel) {
+    fun confirmPay(person: PersonModel, imgPay: File) {
+        showProgress.value = true
         viewModelScope.launch(Dispatchers.IO) {
             person.days.flatMap { it.charges }.distinctBy { it.idChargePerson }.forEach {
                 dao.updateChargePerson(true, it.idChargePerson)
             }
+            val messagePay = person.messageWeek(true)
+            person.days.flatMap { it.charges.map { it.idMessage } }.distinct()
+                .forEach {
+                    if (it == null) return@forEach
+                    repositoryBotT.editMessage(imgPay, messagePay, it)
+                }
+            showProgress.postValue(false)
             consultHistory()
         }
     }
@@ -238,16 +267,49 @@ class MTViewModel : ViewModel() {
 
     }
 
-    fun sendMessage(message: String) {
+    //  "<a href=\"aztecapay://?$qr/\">Banco Azteca</a>\n\n"
+    //  "<a href=\"baz://send_money/$qr/\">Baz</a>"
+    fun sendMessage(vararg persons: PersonModel) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (repositoryBotT.sendMessage(
-                    message
-                ).data?.ok == true
-            ) {
-                Log.d("HOLA MUNOD", "YESR")
-            } else
-                Log.d("HOLA MUNOD", "NOT")
-
+            showProgress.postValue(true)
+            try {
+                persons.forEach { p ->
+                    var weekPerson = p.messageWeek()
+                    val weeksDeuda =
+                        weeks.value?.flatMap { w -> w.persons.filter { it.person == p.person && !it.completePay && it != p } }
+                    if (!weeksDeuda.isNullOrEmpty()) {
+                        weekPerson += "\n\n<b>Montos de semanas anteriores</b>\n${
+                            weeksDeuda.joinToString("\n") { "<b>-> ${it.total.formatPrice}</b>" }
+                        }"
+                    }
+                    val total = p.total + (weeksDeuda?.sumOf { it.total } ?: 0.0)
+                    val qr = generateQR(total)
+                    val responseImage = repositoryBotT.sendPhoto(
+                        QRGEncoder(
+                            qr,
+                            null,
+                            QRGContents.Type.TEXT,
+                            720
+                        ).encodeAsBitmap()
+                            .convertToFile(),
+                        weekPerson + "\n\nTotal del QR: ${total.formatPrice}"
+                        // + "\n<a href=\"https://digital.bienestarazteca.com/pagoqr/$qr\">Pago con Baz</a>"
+                    )
+                    if (responseImage.data?.ok == false) {
+                        return@forEach
+                    }
+                    val idCharges = p.days.flatMap { it.charges.map { it.idChargePerson } }
+                    dao.saveMessageId(
+                        responseImage.data?.result?.messageId,
+                        idCharges
+                    )
+                }
+            } catch (e: Exception) {
+                throw e
+            } finally {
+                consultHistory()
+                showProgress.postValue(false)
+            }
         }
     }
 

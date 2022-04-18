@@ -40,7 +40,8 @@ data class ChargePersonDb(
     var payment: Double, // Cobro de esta persona a este cargo
     var noPersons: Int ,// A cuantos se les cargo esto
     var pay: Boolean, // Esta pagado
-    var chargeId: Long = 0 // Si lo hay
+    var chargeId: Long = 0, // Si lo hay,
+    var idMessage: String? = null
 )
 
 //Embedded
