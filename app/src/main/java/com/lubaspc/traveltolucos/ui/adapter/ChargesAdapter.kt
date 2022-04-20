@@ -37,7 +37,7 @@ class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
         charges[position].let {
             holder.vBind.apply {
                 holder.onTextChange = { total ->
-                    it.total = total
+                    it.price = total / it.amount
                 }
                 edit.isEnabled = it.price == 0.0
                 edit.setText(it.total.formatPrice)
@@ -64,10 +64,7 @@ class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
 
     fun updatePriceGas(price: Double) {
         val index = charges.indexOfFirst { it.id == 9L }
-        charges[index].let {
-            it.price = price
-            it.total = it.price * it.amount
-        }
+        charges[index].price = price
         notifyItemChanged(index)
     }
 

@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.lubaspc.traveltolucos.room.InitDB
 import com.lubaspc.traveltolucos.ui.fragment.SettingsFragment
 import com.lubaspc.traveltolucos.ui.fragment.HistoryFragment
 import com.lubaspc.traveltolucos.ui.fragment.HomeFragment

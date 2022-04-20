@@ -37,6 +37,7 @@ data class ChargePersonDb(
     var personIdFk: Long, //Persona
     var description: String, // Charge
     var day: Calendar,// Dia
+    var noWeek: Int,
     var total: Double, // Cobro del cargo en total
     var payment: Double, // Cobro de esta persona a este cargo
     var noPersons: Int ,// A cuantos se les cargo esto

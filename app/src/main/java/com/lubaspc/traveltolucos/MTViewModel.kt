@@ -121,9 +121,7 @@ class MTViewModel : ViewModel() {
                                         1,
                                         TypeCharge.GROUP,
                                         true
-                                    ).apply {
-                                        total = it.monto
-                                    }
+                                    )
                                 })
                     })
         })
@@ -135,38 +133,41 @@ class MTViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val history = dao.getDays()
             weeks.postValue(
-                history.mapIndexed { i, d ->
-                    d.chargePerson.day.moveField(Calendar.SUNDAY).run {
-                        val monday = moveField(Calendar.MONDAY, true)
-                        val sunday = moveField(Calendar.SUNDAY, next = true, addOne = true)
-                        val days = history.filter { h -> h.chargePerson.day.into(monday, sunday) }
-                        val persons = days.groupBy { it.person }
-                        WeekModel(
-                            monday,
-                            sunday,
-                            days.sumOf { h -> h.chargePerson.payment },
-                            i > history.size - 1,
-                            !persons.values.any { it.any { !it.chargePerson.pay } },
-                            persons.map { group ->
-                                val daysPerson = days.filter { it.person.name == group.key.name }
-                                if (group.key.name == "Charly") {
-                                    daysPerson.any { !it.chargePerson.pay }
-                                }
-                                PersonModel(
-                                    group.key.name,
-                                    group.key.phone,
-                                    daysPerson.sumOf { h -> h.chargePerson.payment },
-                                    !daysPerson.any { it.chargePerson.pay },
-                                    daysPerson.any { it.chargePerson.pay },
-                                    daysPerson.distinctBy { it.chargePerson.day.parseDate() }
-                                        .map { dp ->
-                                            DayModel(
-                                                dp.chargePerson.day,
-                                                daysPerson.filter { it.chargePerson.day.parseDate() == dp.chargePerson.day.parseDate() }
-                                                    .sumOf { it.chargePerson.payment },
-                                                dp.chargePerson.noPersons,
-                                                daysPerson.filter { it.chargePerson.day.parseDate() == dp.chargePerson.day.parseDate() }
-                                                    .map {
+                history.distinctBy { it.chargePerson.noWeek }
+                    .mapIndexed { i, d ->
+                        d.chargePerson.day.moveField(Calendar.SUNDAY).run {
+                            val monday = moveField(Calendar.MONDAY, true)
+                            val sunday = moveField(Calendar.SUNDAY, next = true, addOne = true)
+                            val days =
+                                history.filter { h -> h.chargePerson.day.into(monday, sunday) }
+                            val persons = days.groupBy { it.person }
+                            WeekModel(
+                                monday,
+                                sunday,
+                                days.sumOf { h -> h.chargePerson.payment },
+                                i > history.size - 1,
+                                !persons.values.any { it.any { !it.chargePerson.pay } },
+                                persons.map { group ->
+                                    val daysPerson =
+                                        days.filter { it.person.name == group.key.name }
+                                    if (group.key.name == "Charly") {
+                                        daysPerson.any { !it.chargePerson.pay }
+                                    }
+                                    PersonModel(
+                                        group.key.name,
+                                        group.key.phone,
+                                        daysPerson.sumOf { h -> h.chargePerson.payment },
+                                        !daysPerson.any { it.chargePerson.pay },
+                                        daysPerson.any { it.chargePerson.pay },
+                                        daysPerson.distinctBy { it.chargePerson.day.parseDate() }
+                                            .map { dp ->
+                                                val daysPersonFilter =
+                                                    daysPerson.filter { it.chargePerson.day.parseDate() == dp.chargePerson.day.parseDate() }
+                                                DayModel(
+                                                    dp.chargePerson.day,
+                                                    daysPersonFilter.sumOf { it.chargePerson.payment },
+                                                    dp.chargePerson.noPersons,
+                                                    daysPersonFilter.map {
                                                         ChargeModel(
                                                             it.chargePerson.idChargePerson,
                                                             it.chargePerson.idMessage,
@@ -175,13 +176,13 @@ class MTViewModel : ViewModel() {
                                                             it.chargePerson.payment
                                                         )
                                                     }
-                                            )
-                                        },
-                                )
-                            },
-                        )
+                                                )
+                                            },
+                                    )
+                                },
+                            )
+                        }
                     }
-                }.distinctBy { it.monday }
                     .sortedByDescending { it.monday }
             )
             showProgress.postValue(false)
@@ -226,7 +227,8 @@ class MTViewModel : ViewModel() {
                         payment = c.getTotal(),
                         pay = false,
                         chargeId = c.id,
-                        noPersons = if (c.type == TypeCharge.GROUP) personsSize else 1
+                        noPersons = if (c.type == TypeCharge.GROUP) personsSize else 1,
+                        noWeek = dateSelected.value!!.get(Calendar.WEEK_OF_YEAR)
                     )
                     dao.insertDay(data)
                 }

@@ -53,7 +53,7 @@ class SavePersonAdapter : RecyclerView.Adapter<SavePersonAdapter.ViewHolder>() {
                     }
                     vBindItem.edit.addTextChangedListener { editable ->
                         if (vBindItem.cv.isChecked) {
-                            c.total =
+                            c.price =
                                 editable?.toString()?.replace("$", "")?.toDoubleOrNull() ?: 0.0
                             refreshTotal(tvTotalPay,it)
                         }
