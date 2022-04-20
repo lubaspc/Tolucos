@@ -37,7 +37,9 @@ data class Movimiento(
     var tipo: Int,
     @SerializedName("tramo")
     @Expose
-    var tramo: String
+    var tramo: String,
+    var tagName: String? = null,
+    var tagNumber: String? = null
 ) {
     enum class CrucesFilter {
         PENDIENTES, FACTURADOS

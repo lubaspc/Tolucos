@@ -1,6 +1,5 @@
 package com.lubaspc.traveltolucos
 
-import android.R.attr
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,27 +13,19 @@ import com.lubaspc.traveltolucos.service.model.Movimiento
 import com.lubaspc.traveltolucos.service.model.Tag
 import com.lubaspc.traveltolucos.service.model.Usuario
 import com.lubaspc.traveltolucos.service.telegramBot.BotRepository
-import com.lubaspc.traveltolucos.service.telegramBot.models.EntityMessageRequest
 import com.lubaspc.traveltolucos.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
-import com.google.zxing.WriterException
-
-import android.R.attr.bitmap
-import android.R.attr.shortcutDisabledMessage
-
-import android.R.dimen
-import android.graphics.BitmapFactory
 
 import androidmads.library.qrgenearator.QRGContents
 
 import androidmads.library.qrgenearator.QRGEncoder
-import okhttp3.MultipartBody
+import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
+import com.lubaspc.traveltolucos.service.GasRepository
 
-import okhttp3.RequestBody
 import java.io.File
-
 
 class MTViewModel : ViewModel() {
     private val dao by lazy {
@@ -45,6 +36,10 @@ class MTViewModel : ViewModel() {
     }
     private val repositoryBotT by lazy {
         BotRepository()
+    }
+
+    private val repositoryGas by lazy {
+        GasRepository()
     }
 
 
@@ -59,6 +54,7 @@ class MTViewModel : ViewModel() {
     val movements = MutableLiveData<List<Movimiento>>()
 
     val accountData = MutableLiveData<Usuario?>()
+    val priceGas = MutableLiveData<Double>()
 
     init {
         dateSelected.observeForever {
@@ -94,6 +90,17 @@ class MTViewModel : ViewModel() {
         }
     }
 
+    fun getPriceGas() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newPrice = repositoryGas.getPricePremium()
+            if (newPrice != null)
+                dao.updatePriceGas(newPrice)
+            priceGas.postValue(
+                newPrice ?: charges.value?.first { it.id == 9L }?.total ?: 25.0
+            )
+        }
+    }
+
     private suspend fun getMovements(tags: List<Tag>?, date: Calendar) {
         if (tags == null) return
         movements.postValue(tags.map {
@@ -113,9 +120,10 @@ class MTViewModel : ViewModel() {
                                         it.monto,
                                         1,
                                         TypeCharge.GROUP,
-                                        it.monto,
                                         true
-                                    )
+                                    ).apply {
+                                        total = it.monto
+                                    }
                                 })
                     })
         })

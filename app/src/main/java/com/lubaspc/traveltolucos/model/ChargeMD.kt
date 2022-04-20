@@ -8,6 +8,10 @@ data class ChargeMD(
     var price: Double,
     var amount: Int,
     var type: TypeCharge,
-    var total: Double = 0.0,
     var checked: Boolean = false,
-)
+){
+    var total: Double = 0.0
+        get() = price * amount
+        set(value) {field = value}
+
+}

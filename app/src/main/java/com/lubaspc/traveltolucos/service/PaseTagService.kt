@@ -49,6 +49,7 @@ interface PaseTagService {
         @Query("hasta") str3: String? = null
     ): Response<List<Movimiento>>
 
+
     @GET("cuentas/{cuentaId}/tags/{prefijo}/{numero}")
     suspend fun consultarTag(
         @Path("cuentaId") j: Long,

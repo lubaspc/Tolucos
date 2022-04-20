@@ -90,6 +90,7 @@ class HomeFragment : Fragment() {
         bottomAppBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.m_remove_day -> vModel.getDaysRegister()
+                R.id.m_config -> handler.openSettings()
             }
             return@setOnMenuItemClickListener true
         }
@@ -131,9 +132,13 @@ class HomeFragment : Fragment() {
                 dayRemoveSelect = it[which]
             }.show()
         }
+        vModel.priceGas.observe(this){
+            adapterCharges.updatePriceGas(it)
+        }
         vModel.persons.observe(this, adapterPersons::addPersons)
         vModel.charges.observe(this){
             adapterCharges.setCharges(it.filter { it.type == TypeCharge.GROUP })
+            vModel.getPriceGas()
         }
         vModel.dateSelected.observe(this) {
             vBind.dateSelect.text = it.parseDate()
@@ -143,5 +148,6 @@ class HomeFragment : Fragment() {
     interface HandlerHome {
         fun openSaveDay()
         fun openHistory()
+        fun openSettings()
     }
 }

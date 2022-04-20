@@ -9,4 +9,4 @@ val PersonDb.toMd
     get() = PersonMD(personId, name, phone)
 
 val ChargeDb.toMd
-    get() =  ChargeMD(chargeId, description, price, amount,type,total)
+    get() =  ChargeMD(chargeId, description, price, amount,type)

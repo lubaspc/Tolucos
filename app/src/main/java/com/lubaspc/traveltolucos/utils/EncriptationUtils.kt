@@ -10,16 +10,15 @@ import java.nio.charset.Charset
 private val keyQr = "757B1A65CE23D6238505DC1D569AEDFD"
 private val ivQr = "0733cf9a3f5fca77d220da6fb2ac1580"
 
-
 fun generateQR(amount: Double = 0.0) = encryptQR(
     "14_11561200000024_${
         String.format("%.2f", amount).replace(".", "")
     }_Lubin Perez Cervantes"
 ).replace("\n", "")
 
-private fun encryptQR(value: String?): String {
+private fun encryptQR(value: String?) =
     try {
-        return if (!value.isNullOrEmpty()) {
+        if (!value.isNullOrEmpty()) {
             val binary = hex2Binary(ivQr)
             val ivSpec: AlgorithmParameterSpec = IvParameterSpec(binary)
             val keySpec = SecretKeySpec(keyQr.toByteArray(Charsets.UTF_8), "AES")
@@ -32,13 +31,13 @@ private fun encryptQR(value: String?): String {
         }
     } catch (e: Exception) {
         //Log.i("tag", "error: " + e)
-        return ""
+        ""
     }
-}
 
-private fun decryptQR(value: String?): String {
+
+private fun decryptQR(value: String?) =
     try {
-        return if (!value.isNullOrEmpty()) {
+        if (!value.isNullOrEmpty()) {
             val binary = hex2Binary(ivQr)
             val raw = Base64.decode(value, Base64.DEFAULT)
             val ivSpec: AlgorithmParameterSpec = IvParameterSpec(binary)
@@ -51,9 +50,8 @@ private fun decryptQR(value: String?): String {
         }
     } catch (e: Exception) {
         //Log.i("tag", "error: " + e)
-        return ""
+        ""
     }
-}
 
 private fun hex2Binary(key: String): ByteArray {
     val binary = ByteArray(key.length / 2)

@@ -40,7 +40,7 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.0.5'
-        kotlinCompilerVersion '1.5.21'
+        kotlinCompilerVersion '1.5.31'
     }
     packagingOptions {
         resources {
@@ -70,8 +70,11 @@ dependencies {
 
     implementation "androidmads.library.qrgenearator:QRGenearator:1.0.3"
 
+    implementation 'com.android.volley:volley:1.2.1'
+
     implementation("androidx.room:room-runtime:2.4.2")
     implementation("androidx.room:room-ktx:2.4.2")
+    implementation 'androidx.preference:preference:1.1.1'
     annotationProcessor("androidx.room:room-compiler:2.4.2")
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'

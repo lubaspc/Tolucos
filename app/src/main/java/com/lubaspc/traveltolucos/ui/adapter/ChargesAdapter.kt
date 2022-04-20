@@ -23,7 +23,7 @@ class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
 
         init {
             vBind.edit.addTextChangedListener {
-                onTextChange?.invoke(it?.toString()?.replace("$","")?.toDoubleOrNull() ?: 0.0)
+                onTextChange?.invoke(it?.toString()?.replace("$", "")?.toDoubleOrNull() ?: 0.0)
             }
         }
     }
@@ -61,5 +61,14 @@ class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
     }
 
     fun getChargesChecked() = charges.filter { it.checked }.map { it.copy() }
+
+    fun updatePriceGas(price: Double) {
+        val index = charges.indexOfFirst { it.id == 9L }
+        charges[index].let {
+            it.price = price
+            it.total = it.price * it.amount
+        }
+        notifyItemChanged(index)
+    }
 
 }

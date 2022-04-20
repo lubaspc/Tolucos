@@ -143,6 +143,17 @@ class RetrofitService {
             )
         }
 
+    suspend fun getMovements(tag: Tag, day: String,dayHasta: String) =
+        onResponse {
+            api.consultarMovimientos(
+                clientId,
+                tag.prefijo,
+                tag.numero,
+                day,
+                dayHasta
+            )
+        }
+
     suspend fun getTag(tag: Tag) =
         onResponse { api.consultarTag(clientId, tag.prefijo, tag.numero) }
 

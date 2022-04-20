@@ -25,7 +25,8 @@ data class PersonDb(
     @PrimaryKey
     var personId: Long,
     var name: String,
-    var phone: String
+    var phone: String,
+
 )
 
 //Relations
