@@ -23,6 +23,7 @@ import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
+import com.google.zxing.qrcode.encoder.QRCode
 import com.lubaspc.traveltolucos.service.GasRepository
 
 import java.io.File
@@ -138,6 +139,7 @@ class MTViewModel : ViewModel() {
                         d.chargePerson.day.moveField(Calendar.SUNDAY).run {
                             val monday = moveField(Calendar.MONDAY, true)
                             val sunday = moveField(Calendar.SUNDAY, next = true, addOne = true)
+                            Log.d("TOLUCAOS_NEW","${monday.parseDate()} ${sunday.parseDate()}")
                             val days =
                                 history.filter { h -> h.chargePerson.day.into(monday, sunday) }
                             val persons = days.groupBy { it.person }
@@ -294,6 +296,7 @@ class MTViewModel : ViewModel() {
                     }
                     val total = p.total + (weeksDeuda?.sumOf { it.total } ?: 0.0)
                     val qr = generateQR(total)
+
                     val responseImage = repositoryBotT.sendPhoto(
                         QRGEncoder(
                             qr,

@@ -1,6 +1,7 @@
 package com.lubaspc.traveltolucos
 
 import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome, SaveFormFrag
         ProgressDialog(this)
             .apply {
                 setTitle("Cargando datos")
+                setCancelable(false)
             }
     }
 
@@ -54,6 +56,9 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome, SaveFormFrag
     override fun openSaveDay() = nextFragment(SaveFormFragment())
     override fun openHistory() = nextFragment(HistoryFragment())
     override fun openSettings() = nextFragment(SettingsFragment())
+    override fun openRoutes() {
+        startActivity(Intent(this,RoutesActivity::class.java))
+    }
 
     override fun saveForm() {
         onBackPressed()

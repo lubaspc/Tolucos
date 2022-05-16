@@ -42,6 +42,13 @@ interface BotService {
     ): TBotSendMessaeResponse
 
 
+    @GET("deleteMessage")
+    suspend fun deleteMessage(
+        @Query("chat_id") chatId: String,
+        @Query("message_id") message: String,
+    ): TBotSendMessaeResponse
+
+
     @GET("SuccessfulPayment")
     suspend fun successfulPayment(
         @Query("total_amount") total: Long,

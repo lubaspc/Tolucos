@@ -6,6 +6,11 @@
         android:title="Configuracion" />
 
     <item
+        android:id="@+id/m_routes"
+        android:icon="@drawable/ic_baseline_menu_book_24"
+        android:title="Rutas" />
+
+    <item
         android:id="@+id/m_remove_day"
         android:icon="@drawable/ic_baseline_menu_book_24"
         android:title="Remover fecha" />

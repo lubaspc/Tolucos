@@ -57,6 +57,13 @@ class AppWidget : AppWidgetProvider() {
             R.drawable.ic_baseline_more_time_24,
             MainActivity::class.java
         )
+        views.addViewTag(
+            context,
+            "Rutas",
+            "",
+            R.drawable.ic_baseline_route_24,
+            RoutesActivity::class.java
+        )
         appWidgetManager.updateAppWidget(appWidgetIds, views)
     }
 

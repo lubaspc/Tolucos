@@ -112,6 +112,9 @@ class BotRepository {
             )
         }
 
+    suspend fun deleteMessage(messageId: String, chatId: String = groupId) =
+        onResponse { api.deleteMessage(messageId, chatId) }
+
 
     suspend fun sendPhoto(photo: File, caption: String, parseMode: String = "HTML") =
         onResponse {

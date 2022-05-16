@@ -22,6 +22,7 @@ class LoadingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ProgressDialog(this).apply {
             setMessage("Cargando tags")
+            setCancelable(false)
         }.show()
         lifecycleScope.launch(Dispatchers.IO) {
             App.sharedPreferences.saveTags(RetrofitService().getAccount().data?.tags ?: listOf())

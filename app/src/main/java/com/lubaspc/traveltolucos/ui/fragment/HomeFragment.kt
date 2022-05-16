@@ -91,6 +91,7 @@ class HomeFragment : Fragment() {
             when (it.itemId) {
                 R.id.m_remove_day -> vModel.getDaysRegister()
                 R.id.m_config -> handler.openSettings()
+                R.id.m_routes -> handler.openRoutes()
             }
             return@setOnMenuItemClickListener true
         }
@@ -149,5 +150,6 @@ class HomeFragment : Fragment() {
         fun openSaveDay()
         fun openHistory()
         fun openSettings()
+        fun openRoutes()
     }
 }

@@ -1,0 +1,39 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory app:title="Casa - Trabajao">
+
+        <Preference
+            app:key="all_ht"
+            app:title="Todas las casetas"
+            app:summary="4 casetas"/>
+
+        <Preference
+            android:key="glorieta"
+            android:title="glorieta"
+            android:summary="Glorieta de santa fe"/>
+
+        <Preference
+            app:key="three_ht"
+            app:title="3 casetas"
+            app:summary="Sin caseta de marquesa"/>
+
+        <Preference
+            app:key="two_ht"
+            app:title="Solo super via"
+            app:summary="Sin casetas de Mexico Toluca"/>
+
+
+        <Preference
+            app:key="free_ht"
+            app:title="Sin casetas"
+            app:summary="Sin pagar casetas"/>
+
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Trabajo - Casa">
+
+
+    </PreferenceCategory>
+</PreferenceScreen>
