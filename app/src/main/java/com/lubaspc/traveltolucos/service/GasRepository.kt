@@ -31,6 +31,10 @@ class GasRepository {
         Retrofit.Builder()
             .client(
                 OkHttpClient().newBuilder()
+                    .connectTimeout(120L, TimeUnit.SECONDS)
+                    .callTimeout(120L, TimeUnit.SECONDS)
+                    .readTimeout(120L, TimeUnit.SECONDS)
+                    .writeTimeout(120L, TimeUnit.SECONDS)
                     .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                     .build()
             )

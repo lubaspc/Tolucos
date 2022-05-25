@@ -40,7 +40,7 @@ class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
                     it.price = total / it.amount
                 }
                 edit.isEnabled = it.price == 0.0
-                edit.setText(it.total.formatPrice)
+                edit.setText(it.total.formatPrice.replace("$",""))
                 tv.text = it.description
                 cv.isChecked = it.checked
                 cv.setOnClickListener { _ ->
@@ -64,6 +64,7 @@ class ChargesAdapter : RecyclerView.Adapter<ChargesAdapter.ViewHolder>() {
 
     fun updatePriceGas(price: Double) {
         val index = charges.indexOfFirst { it.id == 9L }
+        if (index<0) return
         charges[index].price = price
         notifyItemChanged(index)
     }

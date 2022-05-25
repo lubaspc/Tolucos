@@ -21,9 +21,7 @@ import java.util.*
 import androidmads.library.qrgenearator.QRGContents
 
 import androidmads.library.qrgenearator.QRGEncoder
-import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
-import com.google.zxing.qrcode.encoder.QRCode
 import com.lubaspc.traveltolucos.service.GasRepository
 
 import java.io.File
@@ -105,6 +103,8 @@ class MTViewModel : ViewModel() {
     private suspend fun getMovements(tags: List<Tag>?, date: Calendar) {
         if (tags == null) return
         movements.postValue(tags.map {
+            val amount = repository.getMovements(it,"2022-04-20","2022-05-20").data?.sumOf { it.monto }
+            Log.d("GET_MOVEMENT","$$amount")
             repository.getMovements(it, date)
         }.flatMap {
             it.data ?: listOf()
@@ -117,7 +117,7 @@ class MTViewModel : ViewModel() {
                                 .map {
                                     ChargeMD(
                                         0,
-                                        it.tramo,
+                                        "${it.tramo} ${it.caseta}",
                                         it.monto,
                                         1,
                                         TypeCharge.GROUP,
@@ -235,6 +235,7 @@ class MTViewModel : ViewModel() {
                     dao.insertDay(data)
                 }
             }
+            consultHistory()
         }
     }
 

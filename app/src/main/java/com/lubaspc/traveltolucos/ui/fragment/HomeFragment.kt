@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.ui.text.toUpperCase
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -97,16 +98,8 @@ class HomeFragment : Fragment() {
         }
     }.root
 
-
-    @SuppressLint("CommitPrefEdits")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        /* try {
-             Class.forName("com.lubaspc.traveltolucos.utils.ClassName")
-                 .getMethod("static",Context::class.java,String::class.java)
-                 .invoke(null,requireContext(),"Hola mundanos")
-         }catch (e: Exception){}
- */
+    override fun onResume() {
+        super.onResume()
         vModel.accountData.observe(this) { user ->
             vBind.swipe.isRefreshing = false
             vBind.llTags.removeAllViews()
@@ -119,8 +112,6 @@ class HomeFragment : Fragment() {
                     chipEndPadding = 24f
                     chipStartPadding = 24f
                     chipStrokeWidth = 1f
-                    setChipBackgroundColorResource(R.color.purple_700)
-                    setChipIconTintResource(R.color.white)
                     setChipIconResource( if (it.isActivo) R.drawable.ic_baseline_check_circle_24 else R.drawable.ic_baseline_remove_circle_outline_24)
                 })
             }
@@ -128,7 +119,7 @@ class HomeFragment : Fragment() {
         vModel.daysExist.observe(this) {
             dayRemoveSelect = it.firstOrNull() ?: return@observe
             dialogDays.setSingleChoiceItems(
-                it.map { d -> d.parseDate() }.toTypedArray(), 0
+                it.map { d -> d.parseDate("dd MMMM yyyy").uppercase(Locale.getDefault()) }.toTypedArray(), 0
             ) { _, which ->
                 dayRemoveSelect = it[which]
             }.show()

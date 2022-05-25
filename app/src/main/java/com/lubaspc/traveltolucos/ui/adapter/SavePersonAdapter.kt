@@ -45,7 +45,7 @@ class SavePersonAdapter : RecyclerView.Adapter<SavePersonAdapter.ViewHolder>() {
                     )
                     vBindItem.cv.isCheckable = true
                     vBindItem.tv.text = c.description
-                    vBindItem.edit.setText(c.total.formatPrice)
+                    vBindItem.edit.setText(c.total.formatPrice.replace("$",""))
                     vBindItem.cv.setOnClickListener { _ ->
                         vBindItem.cv.isChecked = !vBindItem.cv.isChecked
                         c.checked = vBindItem.cv.isChecked
@@ -58,7 +58,7 @@ class SavePersonAdapter : RecyclerView.Adapter<SavePersonAdapter.ViewHolder>() {
                             refreshTotal(tvTotalPay,it)
                         }
                     }
-                    ll.addView(vBindItem.root, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT))
+                    ll.addView(vBindItem.root, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT))
                 }
             }
         }

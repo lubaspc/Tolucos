@@ -30,9 +30,6 @@ import com.lubaspc.traveltolucos.databinding.FragmentHistoryBinding
 import com.lubaspc.traveltolucos.model.ChargeDayMD
 import com.lubaspc.traveltolucos.model.PersonModel
 import com.lubaspc.traveltolucos.model.WeekModel
-import com.lubaspc.traveltolucos.ui.Purple500
-import com.lubaspc.traveltolucos.ui.Purple700
-import com.lubaspc.traveltolucos.ui.Teal200
 import com.lubaspc.traveltolucos.ui.WeekView
 import com.lubaspc.traveltolucos.utils.*
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -44,10 +41,7 @@ class HistoryFragment : Fragment() {
     private val weekState = mutableStateListOf<WeekModel>()
     val refreshing = SwipeRefreshState(true)
 
-    @InternalCoroutinesApi
-    @ExperimentalFoundationApi
     @ExperimentalMaterialApi
-    @ExperimentalAnimationApi
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,11 +55,8 @@ class HistoryFragment : Fragment() {
         )
         setContent {
             MaterialTheme(
-                colors = lightColors(
-                    primary = Purple500,
-                    primaryVariant = Purple700,
-                    secondary = Teal200
-                ),
+                colors = if (isSystemInDarkTheme()) darkColors()
+                else lightColors(),
                 content = { WeekView(weeks = weekState) }
             )
         }
@@ -89,7 +80,8 @@ class HistoryFragment : Fragment() {
 
     fun showDialogChagePay(person: PersonModel) {
         if (context == null) return
-        val imgPay = BitmapFactory.decodeResource(requireActivity().resources, R.drawable.pagado).convertToFile()
+        val imgPay = BitmapFactory.decodeResource(requireActivity().resources, R.drawable.pagado)
+            .convertToFile()
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setTitle("Confirmar pago")
             .setMessage(
@@ -97,7 +89,7 @@ class HistoryFragment : Fragment() {
             )
             .setPositiveButton("PAGAR") { d, _ ->
                 d.dismiss()
-                vModel.confirmPay(person,imgPay)
+                vModel.confirmPay(person, imgPay)
             }.show()
     }
 }

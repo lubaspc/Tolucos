@@ -14,7 +14,7 @@ import com.lubaspc.traveltolucos.ui.fragment.HomeFragment
 import com.lubaspc.traveltolucos.ui.fragment.SaveFormFragment
 
 
-class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome, SaveFormFragment.HandlerForm {
+class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome {
 
     private val vModel: MTViewModel by viewModels()
     private val progress by lazy {
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome, SaveFormFrag
 
     private fun nextFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .add(R.id.container, fragment, fragment.javaClass.simpleName)
+            .replace(R.id.container, fragment, fragment.javaClass.simpleName)
             .addToBackStack(this.javaClass.simpleName)
             .commit()
     }
@@ -53,17 +53,13 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome, SaveFormFrag
         else super.onBackPressed()
     }
 
-    override fun openSaveDay() = nextFragment(SaveFormFragment())
+    override fun openSaveDay() = SaveFormFragment().show(supportFragmentManager)
     override fun openHistory() = nextFragment(HistoryFragment())
     override fun openSettings() = nextFragment(SettingsFragment())
     override fun openRoutes() {
         startActivity(Intent(this,RoutesActivity::class.java))
     }
 
-    override fun saveForm() {
-        onBackPressed()
-        vModel.consultHistory()
-    }
 
 }
 

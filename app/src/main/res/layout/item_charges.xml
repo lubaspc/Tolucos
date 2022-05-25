@@ -3,53 +3,65 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="charge"
             type="com.lubaspc.traveltolucos.model.ChargeMD" />
     </data>
 
-    <LinearLayout
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:layout_margin="8dp"
+        android:checkable="true"
+        android:minWidth="250dp"
+        app:checkedIconSize="0dp">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cv"
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:minWidth="250dp"
             android:layout_height="wrap_content"
-            app:checkedIconSize="0dp"
-            android:checkable="true">
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:showDividers="middle">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:showDividers="middle"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginTop="8dp"
+                android:maxLines="3"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit ="marquee_forever"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scrollHorizontally="true"
+                android:textIsSelectable="true"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tv"
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="24sp"
+                app:prefixText="$">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:maxLines="3"
-                    android:layout_marginTop="8dp"
-                    android:textAlignment="center"
-                    android:textStyle="bold" />
+                    android:inputType="numberDecimal|numberSigned" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <EditText
-                    android:id="@+id/edit"
-                    android:textSize="18sp"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal|numberSigned"/>
-
-            </LinearLayout>
+        </LinearLayout>
 
 
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
 </layout>

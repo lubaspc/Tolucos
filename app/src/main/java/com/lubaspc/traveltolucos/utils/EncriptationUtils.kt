@@ -34,6 +34,25 @@ private fun encryptQR(value: String?) =
         ""
     }
 
+private fun decryptQR(value: String?) =
+    try {
+        if (!value.isNullOrEmpty()) {
+            val binary = hex2Binary(ivQr)
+            val raw = Base64.decode(value, Base64.DEFAULT)
+            val ivSpec: AlgorithmParameterSpec = IvParameterSpec(binary)
+            val newKey = SecretKeySpec(keyQr.toByteArray(Charsets.UTF_8), "AES")
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            cipher.init(Cipher.DECRYPT_MODE, newKey, ivSpec)
+            String(cipher.doFinal(raw), Charset.defaultCharset())
+        } else {
+            ""
+        }
+    } catch (e: Exception) {
+        //Log.i("tag", "error: " + e)
+        ""
+    }
+
+
 private fun hex2Binary(key: String): ByteArray {
     val binary = ByteArray(key.length / 2)
     for (i in binary.indices) {

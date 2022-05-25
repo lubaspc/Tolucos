@@ -29,9 +29,9 @@ class InitDB {
                             ChargeDb(
                                 11,
                                 "(E)",
-                                12.0,
+                                50.0,
                                 1,
-                                12.0,
+                                50.0,
                                 TypeCharge.GROUP
                             )
                         )

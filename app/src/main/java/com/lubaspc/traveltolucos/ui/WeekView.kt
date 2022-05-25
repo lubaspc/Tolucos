@@ -1,5 +1,7 @@
 package com.lubaspc.traveltolucos.ui
 
+import android.os.Build
+import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
@@ -32,54 +34,14 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import java.util.*
 
-val Purple500 = Color(0xff62727b)
-val Purple700 = Color(0xffb71c1c)
-val Teal200 = Color(0xFF03DAC5)
 
-@InternalCoroutinesApi
-@ExperimentalAnimationApi
-@ExperimentalMaterialApi
-@ExperimentalFoundationApi
-@Composable
-fun LazyListState.OnBottomReached(
-    loadMore: () -> Unit
-) {
-    val shouldLoadMore = remember {
-        derivedStateOf {
+val iconEnableRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) android.R.color.system_accent1_600 else R.color.white
+val iconDisableRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) android.R.color.system_accent1_100 else R.color.white
 
-            // get last visible item
-            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-                ?:
-                // list is empty
-                // return false here if loadMore should not be invoked if the list is empty
-                return@derivedStateOf true
-
-            // Check if last visible item is the last item in the list
-            lastVisibleItem.index == layoutInfo.totalItemsCount - 1
-        }
-    }
-
-    LaunchedEffect(shouldLoadMore) {
-        snapshotFlow { shouldLoadMore.value }
-            .onEach {
-                if (it) loadMore()
-                // if should load more, then invoke loadMore
-            }
-    }
-}
-
-@ExperimentalFoundationApi
-@OptIn(ExperimentalAnimationApi::class)
-@InternalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
 fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
-    val rememberState = rememberLazyListState()
-    rememberState.OnBottomReached {
-        vModel.consultPlusWeek()
-    }
     Scaffold(
-        backgroundColor = colorResource(id = R.color.black)
     ) {
         SwipeRefresh(state = refreshing, onRefresh = this::refreshHistory) {
             LazyColumn(
@@ -87,7 +49,6 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                     .padding(12.dp)
                     .fillMaxWidth()
                     .fillMaxHeight(),
-                state = rememberState
             ) {
                 itemsIndexed(weeks) { i, week ->
                     val showWeek = remember { mutableStateOf(i == 0) }
@@ -95,9 +56,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             elevation = 10.dp,
-                            backgroundColor = colorResource(id = R.color.teal_700),
-                            contentColor = colorResource(id = R.color.white),
-                            border = BorderStroke(1.dp, colorResource(id = R.color.teal_700)),
+                            border = BorderStroke(1.dp, MaterialTheme.colors.secondary),
                             onClick = {
                                 if (showWeek.value && !week.completePay) {
                                     vModel.sendMessage(*week.persons.toTypedArray())
@@ -106,18 +65,18 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(12.dp,0.dp)
+                                modifier = Modifier.padding(12.dp, 0.dp)
                             ) {
-                            Icon(
-                                Icons.Default.CheckCircle,
-                                contentDescription = null,
-                                tint = colorResource(if (week.completePay) R.color.green else R.color.white)
-                            )
-                            textTitle(week.monday.parseDate("dd") + "-" + week.sunday.parseDate())
-                            Spacer(Modifier.weight(1f, true))
-                            textTitle("Total ${week.totalWeek.formatPrice}")
+                                Icon(
+                                    Icons.Default.CheckCircle,
+                                    contentDescription = null,
+                                    tint = colorResource(if (week.completePay) iconEnableRes else iconDisableRes)
+                                )
+                                textTitle(week.monday.parseDate("dd") + "-" + week.sunday.parseDate())
+                                Spacer(Modifier.weight(1f, true))
+                                textTitle("Total ${week.totalWeek.formatPrice}")
 
-                        }
+                            }
                         }
                         Spacer(modifier = Modifier.height(1.dp))
                         if (showWeek.value) {
@@ -130,12 +89,10 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                     modifier = Modifier
                                         .fillMaxWidth(),
                                     elevation = 10.dp,
-                                    backgroundColor = colorResource(id = R.color.purple_dark),
                                     border = BorderStroke(
                                         1.dp,
-                                        colorResource(id = R.color.teal_700)
+                                        MaterialTheme.colors.secondary
                                     ),
-                                    contentColor = colorResource(id = R.color.white),
                                     onClick = {
                                         if (showPerson.value && !p.completePay)
                                             vModel.sendMessage(p)
@@ -151,7 +108,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                                 Icon(
                                                     Icons.Default.CheckCircle,
                                                     contentDescription = null,
-                                                    tint = colorResource(if (p.completePay) R.color.green else R.color.white)
+                                                    tint = colorResource(if (p.completePay) iconEnableRes else iconDisableRes)
                                                 )
                                             }
                                             textTitle(p.person)
@@ -159,9 +116,9 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                             textTitle("T: ${p.total.formatPrice}")
                                         }
                                         if (showPerson.value) {
-                                            Divider(color = colorResource(id = R.color.teal_700))
+                                            Divider(color = MaterialTheme.colors.secondary)
                                             p.days.map { d ->
-                                                Divider(color = colorResource(id = R.color.teal_700))
+                                                Divider(color = MaterialTheme.colors.secondary)
                                                 Row {
                                                     textTitle(
                                                         d.day.parseDate(),
@@ -176,7 +133,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                                         Modifier.weight(1f)
                                                     )
                                                 }
-                                                Divider(color = colorResource(id = R.color.teal_700))
+                                                Divider(color = MaterialTheme.colors.secondary)
                                                 d.charges.map { c ->
                                                     Row {
                                                         textBody(
