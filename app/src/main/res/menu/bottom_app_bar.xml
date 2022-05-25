@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/m_config"
+        app:showAsAction="always"
+        android:id="@+id/m_history"
         android:icon="@drawable/ic_baseline_menu_book_24"
+        android:title="Remover fecha" />
+    <item
+        app:showAsAction="always"
+        android:id="@+id/m_config"
+        android:icon="@drawable/ic_baseline_settings_24"
         android:title="Configuracion" />
 
     <item
+        app:showAsAction="always"
         android:id="@+id/m_routes"
-        android:icon="@drawable/ic_baseline_menu_book_24"
+        android:icon="@drawable/ic_baseline_route_24"
         android:title="Rutas" />
 
     <item
+        app:showAsAction="always"
         android:id="@+id/m_remove_day"
-        android:icon="@drawable/ic_baseline_menu_book_24"
+        android:icon="@drawable/ic_baseline_date_range_24"
         android:title="Remover fecha" />
+
+
 </menu>

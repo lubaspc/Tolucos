@@ -74,9 +74,6 @@ class HomeFragment : Fragment() {
         vBind = this
         rvPersons.adapter = adapterPersons
         rvCharge.adapter = adapterCharges
-        bottomAppBar.setNavigationOnClickListener {
-            handler.openHistory()
-        }
         dateSelect.setOnClickListener {
             datePicker.show(childFragmentManager, datePicker.javaClass.simpleName)
         }
@@ -93,6 +90,7 @@ class HomeFragment : Fragment() {
                 R.id.m_remove_day -> vModel.getDaysRegister()
                 R.id.m_config -> handler.openSettings()
                 R.id.m_routes -> handler.openRoutes()
+                R.id.m_history -> handler.openHistory()
             }
             return@setOnMenuItemClickListener true
         }
@@ -112,23 +110,24 @@ class HomeFragment : Fragment() {
                     chipEndPadding = 24f
                     chipStartPadding = 24f
                     chipStrokeWidth = 1f
-                    setChipIconResource( if (it.isActivo) R.drawable.ic_baseline_check_circle_24 else R.drawable.ic_baseline_remove_circle_outline_24)
+                    setChipIconResource(if (it.isActivo) R.drawable.ic_baseline_check_circle_24 else R.drawable.ic_baseline_remove_circle_outline_24)
                 })
             }
         }
         vModel.daysExist.observe(this) {
             dayRemoveSelect = it.firstOrNull() ?: return@observe
             dialogDays.setSingleChoiceItems(
-                it.map { d -> d.parseDate("dd MMMM yyyy").uppercase(Locale.getDefault()) }.toTypedArray(), 0
+                it.map { d -> d.parseDate("dd MMMM yyyy").uppercase(Locale.getDefault()) }
+                    .toTypedArray(), 0
             ) { _, which ->
                 dayRemoveSelect = it[which]
             }.show()
         }
-        vModel.priceGas.observe(this){
+        vModel.priceGas.observe(this) {
             adapterCharges.updatePriceGas(it)
         }
         vModel.persons.observe(this, adapterPersons::addPersons)
-        vModel.charges.observe(this){
+        vModel.charges.observe(this) {
             adapterCharges.setCharges(it.filter { it.type == TypeCharge.GROUP })
             vModel.getPriceGas()
         }
