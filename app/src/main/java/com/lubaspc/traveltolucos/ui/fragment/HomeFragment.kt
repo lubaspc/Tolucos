@@ -129,7 +129,8 @@ class HomeFragment : Fragment() {
         vModel.persons.observe(this, adapterPersons::addPersons)
         vModel.charges.observe(this) {
             adapterCharges.setCharges(it.filter { it.type == TypeCharge.GROUP })
-            vModel.getPriceGas()
+            if (vModel.priceGas.value == null)
+                vModel.getPriceGas()
         }
         vModel.dateSelected.observe(this) {
             vBind.dateSelect.text = it.parseDate()

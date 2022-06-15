@@ -8,10 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.lubaspc.traveltolucos.room.InitDB
-import com.lubaspc.traveltolucos.ui.fragment.SettingsFragment
-import com.lubaspc.traveltolucos.ui.fragment.HistoryFragment
-import com.lubaspc.traveltolucos.ui.fragment.HomeFragment
-import com.lubaspc.traveltolucos.ui.fragment.SaveFormFragment
+import com.lubaspc.traveltolucos.ui.fragment.*
 
 
 class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome {
@@ -25,12 +22,17 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome {
             }
     }
 
+    private val dislogMovements by lazy {
+        MovementsDialog()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         nextFragment(HomeFragment())
         vModel.consultHistory()
-        //InitDB.insertInitialDB(lifecycleScope)
+        vModel.getProviders()
+        InitDB.insertInitialDB(lifecycleScope)
         vModel.showProgress.observe(this) {
             if (it && !progress.isShowing) {
                 progress.show()
@@ -55,7 +57,7 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome {
 
     override fun openSaveDay() = SaveFormFragment().show(supportFragmentManager)
     override fun openHistory() = nextFragment(HistoryFragment())
-    override fun openSettings() = nextFragment(SettingsFragment())
+    override fun openSettings() = dislogMovements.show(supportFragmentManager)
     override fun openRoutes() {
         startActivity(Intent(this,RoutesActivity::class.java))
     }

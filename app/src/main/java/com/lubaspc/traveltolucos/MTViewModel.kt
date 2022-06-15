@@ -21,8 +21,10 @@ import java.util.*
 import androidmads.library.qrgenearator.QRGContents
 
 import androidmads.library.qrgenearator.QRGEncoder
+import androidx.core.util.Pair
 import com.google.gson.Gson
 import com.lubaspc.traveltolucos.service.GasRepository
+import com.lubaspc.traveltolucos.service.prometeo.PrometeoRepository
 
 import java.io.File
 
@@ -51,6 +53,7 @@ class MTViewModel : ViewModel() {
     val dayChanger = MutableLiveData<List<ChargeDayMD>>()
     val weeks = MutableLiveData<List<WeekModel>>()
     val movements = MutableLiveData<List<Movimiento>>()
+    val movementsConsult = MutableLiveData<List<Movimiento>>()
 
     val accountData = MutableLiveData<Usuario?>()
     val priceGas = MutableLiveData<Double>()
@@ -103,8 +106,6 @@ class MTViewModel : ViewModel() {
     private suspend fun getMovements(tags: List<Tag>?, date: Calendar) {
         if (tags == null) return
         movements.postValue(tags.map {
-            val amount = repository.getMovements(it,"2022-04-20","2022-05-20").data?.sumOf { it.monto }
-            Log.d("GET_MOVEMENT","$$amount")
             repository.getMovements(it, date)
         }.flatMap {
             it.data ?: listOf()
@@ -117,7 +118,7 @@ class MTViewModel : ViewModel() {
                                 .map {
                                     ChargeMD(
                                         0,
-                                        "${it.tramo} ${it.caseta}",
+                                        "${it.fecha.parseDate("hh:ss a")} ${it.tramo} ${it.caseta}",
                                         it.monto,
                                         1,
                                         TypeCharge.GROUP,
@@ -126,6 +127,29 @@ class MTViewModel : ViewModel() {
                                 })
                     })
         })
+    }
+
+    fun getMovements(rangeDate: Pair<Long, Long>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            movementsConsult.postValue(accountData.value?.tags?.flatMap {
+                repository.getMovements(
+                    it,
+                    Date(rangeDate.first).parseDate("YYYY-MM-dd"),
+                    Date(rangeDate.first).parseDate("YYYY-MM-dd")
+                ).data ?: listOf()
+            })
+        }
+
+    }
+
+    fun getProviders() {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d(
+                "PROVIDE_S",
+                PrometeoRepository().login().data?.status ?: "NO FAIDED"
+            )
+
+        }
     }
 
 
@@ -139,7 +163,7 @@ class MTViewModel : ViewModel() {
                         d.chargePerson.day.moveField(Calendar.SUNDAY).run {
                             val monday = moveField(Calendar.MONDAY, true)
                             val sunday = moveField(Calendar.SUNDAY, next = true, addOne = true)
-                            Log.d("TOLUCAOS_NEW","${monday.parseDate()} ${sunday.parseDate()}")
+                            Log.d("TOLUCAOS_NEW", "${monday.parseDate()} ${sunday.parseDate()}")
                             val days =
                                 history.filter { h -> h.chargePerson.day.into(monday, sunday) }
                             val persons = days.groupBy { it.person }
@@ -306,8 +330,8 @@ class MTViewModel : ViewModel() {
                             720
                         ).encodeAsBitmap()
                             .convertToFile(),
-                        weekPerson + "\n\nTotal del QR: ${total.formatPrice}"
-                        // + "\n<a href=\"https://digital.bienestarazteca.com/pagoqr/$qr\">Pago con Baz</a>"
+                        weekPerson + "\n\nTotal del QR: ${total.formatPrice}"+
+                        "\n<a href=\"https://www.bienestarazteca.com.mx/pagoqr/?IdApp=2&qrData=$qr\">Pago con Baz</a>"
                     )
                     if (responseImage.data?.ok == false) {
                         return@forEach
