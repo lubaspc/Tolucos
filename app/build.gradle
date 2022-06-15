@@ -83,6 +83,7 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation "androidx.car.app:app:1.1.0"
+    implementation project(":QRUtilDecryptLib")
     // To use Kotlin annotation processing tool (kapt)
     kapt("androidx.room:room-compiler:2.4.2")
 }

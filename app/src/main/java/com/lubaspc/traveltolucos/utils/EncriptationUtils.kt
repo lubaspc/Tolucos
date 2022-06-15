@@ -6,15 +6,27 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.util.Base64
 import java.nio.charset.Charset
+import mx.com.bancoazteca.bancadigital.qrutildecryptlib.EncryptQR
+import mx.com.bancoazteca.bancadigital.qrutildecryptlib.RequestQR
 
 private val keyQr = "757B1A65CE23D6238505DC1D569AEDFD"
 private val ivQr = "0733cf9a3f5fca77d220da6fb2ac1580"
 
-fun generateQR(amount: Double = 0.0) = encryptQR(
-    "14_11561200000024_${
-        String.format("%.2f", amount).replace(".", "")
-    }_Lubin Perez Cervantes"
-).replace("\n", "")
+
+fun generateQR(amount: Double): String {
+    val account = "11561200000024"
+    val userName = "Lubin Perez Cervantes"
+    val cypherStore ="5bac4e66-0fb7-4523-b820-7f1548736bfd"
+
+
+    return EncryptQR().encryptv2(
+        RequestQR()
+            .withKey(cypherStore)
+            .withDestinationAccount(account)
+            .withAmountConcept(String.format("%.2f", amount).replace(".", ""))
+            .withAlias(userName)
+    )
+}
 
 private fun encryptQR(value: String?) =
     try {
