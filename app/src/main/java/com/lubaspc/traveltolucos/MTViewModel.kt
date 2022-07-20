@@ -135,7 +135,7 @@ class MTViewModel : ViewModel() {
                 repository.getMovements(
                     it,
                     Date(rangeDate.first).parseDate("YYYY-MM-dd"),
-                    Date(rangeDate.first).parseDate("YYYY-MM-dd")
+                    Date(rangeDate.second).parseDate("YYYY-MM-dd")
                 ).data ?: listOf()
             })
         }

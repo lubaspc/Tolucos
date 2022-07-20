@@ -1,16 +1,11 @@
 package com.lubaspc.traveltolucos.ui.fragment
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
-import androidx.compose.ui.text.toUpperCase
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -23,9 +18,7 @@ import com.lubaspc.traveltolucos.ui.adapter.ChargesAdapter
 import com.lubaspc.traveltolucos.ui.adapter.PersonsAdapter
 import com.lubaspc.traveltolucos.utils.parseDate
 import com.lubaspc.traveltolucos.utils.saveTags
-import java.lang.Exception
 import java.util.*
-import kotlin.reflect.KClass
 
 class HomeFragment : Fragment() {
     private val adapterPersons by lazy {
@@ -121,7 +114,7 @@ class HomeFragment : Fragment() {
                     .toTypedArray(), 0
             ) { _, which ->
                 dayRemoveSelect = it[which]
-            }.show()
+            }.setOnDismissListener { vModel.daysExist.value = listOf() }.show()
         }
         vModel.priceGas.observe(this) {
             adapterCharges.updatePriceGas(it)

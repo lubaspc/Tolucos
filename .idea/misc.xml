@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../layout/compose-model-1658272728141.xml" value="0.6368563685636857" />
+        <entry key="../../../../../layout/compose-model-1658276697050.xml" value="0.6368563685636857" />
+        <entry key="../../../../../layout/compose-model-1658286887095.xml" value="0.1" />
         <entry key="../../../../layout/compose-model-1637600642923.xml" value="1.8989169675090252" />
         <entry key="../../../../layout/compose-model-1637601524305.xml" value="1.8989169675090252" />
         <entry key="../../../../layout/compose-model-1637615227499.xml" value="0.32263513513513514" />
@@ -23,6 +26,7 @@
         <entry key="app/src/main/res/layout/item_charge_rv.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/item_charges.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/item_person.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/item_week.xml" value="0.18072916666666666" />
         <entry key="app/src/main/res/layout/main_activity.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/routes_activity.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/widget_tag.xml" value="0.35572916666666665" />

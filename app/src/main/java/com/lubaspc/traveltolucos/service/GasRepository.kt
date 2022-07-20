@@ -52,5 +52,5 @@ class GasRepository {
 
 
     suspend fun getPricePremium() = api.getPrices()
-        .firstOrNull { it.tipoCombustible == "Premium" }?.precioPromedio?.toDoubleOrNull()
+        .firstOrNull { it.tipoCombustible == "Premium" }?.precioPromedio?.toDoubleOrNull()?.plus(1)
 }

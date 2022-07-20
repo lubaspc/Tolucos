@@ -1,5 +1,6 @@
 package com.lubaspc.traveltolucos.ui
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
@@ -8,9 +9,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,8 +43,7 @@ val colorBorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) android.R.
 @ExperimentalMaterialApi
 @Composable
 fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
-    Scaffold(
-    ) {
+    Surface{
         SwipeRefresh(state = refreshing, onRefresh = this::refreshHistory) {
             LazyColumn(
                 modifier = Modifier
@@ -55,14 +55,15 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                     val showWeek = remember { mutableStateOf(i == 0) }
                     Column {
                         Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            elevation = 10.dp,
-                            border = BorderStroke(1.dp, colorResource(id = colorBorder)),
                             onClick = {
                                 if (showWeek.value && !week.completePay) {
                                     vModel.sendMessage(*week.persons.toTypedArray())
                                 } else showWeek.value = !showWeek.value
-                            }
+                            },
+                            elevation = 10.dp,
+//                            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            border = BorderStroke(1.dp, colorResource(id = colorBorder)),
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -90,6 +91,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                     modifier = Modifier
                                         .fillMaxWidth(),
                                     elevation = 10.dp,
+//                                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
                                     border = BorderStroke(
                                         1.dp,
                                         colorResource(id = colorBorder)

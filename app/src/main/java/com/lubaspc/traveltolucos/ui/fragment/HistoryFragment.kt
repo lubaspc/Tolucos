@@ -14,6 +14,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -55,8 +56,6 @@ class HistoryFragment : Fragment() {
         )
         setContent {
             MaterialTheme(
-                colors = if (isSystemInDarkTheme()) darkColors()
-                else lightColors(),
                 content = { WeekView(weeks = weekState) }
             )
         }
