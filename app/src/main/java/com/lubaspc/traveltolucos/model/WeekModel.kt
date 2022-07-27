@@ -35,6 +35,17 @@ data class PersonModel(
                 }"
             }
         }"+""
+
+
+    fun messageWeekWhatsapp(pay: Boolean = false) =
+        "*Total Semana ${total.formatPrice}* ${
+            days.joinToString("") {
+                "*${it.day.parseDate()}*: ${it.total.formatPrice} ${
+                    it.charges.joinToString("") {
+                        "*->* ${it.description.take(12)}: ${it.total.formatPrice} = ${it.payment.formatPrice}" }
+                }"
+            }
+        }"
 }
 
 data class DayModel(

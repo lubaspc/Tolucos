@@ -1,6 +1,9 @@
 package com.lubaspc.traveltolucos
 
 import android.util.Log
+import androidmads.library.qrgenearator.QRGContents
+import androidmads.library.qrgenearator.QRGEncoder
+import androidx.core.util.Pair
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,25 +11,23 @@ import com.lubaspc.traveltolucos.model.*
 import com.lubaspc.traveltolucos.room.ChargePersonDb
 import com.lubaspc.traveltolucos.room.DBRoom
 import com.lubaspc.traveltolucos.room.TypeCharge
+import com.lubaspc.traveltolucos.service.GasRepository
 import com.lubaspc.traveltolucos.service.RetrofitService
 import com.lubaspc.traveltolucos.service.model.Movimiento
 import com.lubaspc.traveltolucos.service.model.Tag
 import com.lubaspc.traveltolucos.service.model.Usuario
+import com.lubaspc.traveltolucos.service.prometeo.PrometeoRepository
 import com.lubaspc.traveltolucos.service.telegramBot.BotRepository
+import com.lubaspc.traveltolucos.service.whatsappcloud.WhatsappCloudRepository
+import com.lubaspc.traveltolucos.service.whatsappcloud.models.MessageRequest
+import com.lubaspc.traveltolucos.service.whatsappcloud.models.TemplanesEnum
+import com.lubaspc.traveltolucos.service.whatsappcloud.models.TypeComponentEnum
+import com.lubaspc.traveltolucos.service.whatsappcloud.models.TypeMessageEnum
 import com.lubaspc.traveltolucos.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
-
-import androidmads.library.qrgenearator.QRGContents
-
-import androidmads.library.qrgenearator.QRGEncoder
-import androidx.core.util.Pair
-import com.google.gson.Gson
-import com.lubaspc.traveltolucos.service.GasRepository
-import com.lubaspc.traveltolucos.service.prometeo.PrometeoRepository
-
 import java.io.File
+import java.util.*
 
 class MTViewModel : ViewModel() {
     private val dao by lazy {
@@ -41,6 +42,10 @@ class MTViewModel : ViewModel() {
 
     private val repositoryGas by lazy {
         GasRepository()
+    }
+
+    private val repositoryWhatsapp by lazy {
+        WhatsappCloudRepository()
     }
 
 
@@ -311,34 +316,98 @@ class MTViewModel : ViewModel() {
             showProgress.postValue(true)
             try {
                 persons.forEach { p ->
-                    var weekPerson = p.messageWeek()
+                    var weekPerson = p.messageWeekWhatsapp()
                     val weeksDeuda =
                         weeks.value?.flatMap { w -> w.persons.filter { it.person == p.person && !it.completePay && it != p } }
-                    if (!weeksDeuda.isNullOrEmpty()) {
-                        weekPerson += "\n\n<b>Montos de semanas anteriores</b>\n${
-                            weeksDeuda.joinToString("\n") { "<b>-> ${it.total.formatPrice}</b>" }
-                        }"
-                    }
                     val total = p.total + (weeksDeuda?.sumOf { it.total } ?: 0.0)
                     val qr = generateQR(total)
 
-                    val responseImage = repositoryBotT.sendPhoto(
+                    val qrResponse = repositoryWhatsapp.uploadImage(
                         QRGEncoder(
                             qr,
                             null,
                             QRGContents.Type.TEXT,
                             720
                         ).encodeAsBitmap()
-                            .convertToFile(),
-                        weekPerson + "\n\nTotal del QR: ${total.formatPrice}"+
-                        "\n<a href=\"https://www.bienestarazteca.com.mx/pagoqr/?IdApp=2&qrData=$qr\">Pago con Baz</a>"
+                            .convertToFile()
                     )
-                    if (responseImage.data?.ok == false) {
-                        return@forEach
-                    }
+                    val messageResponse = repositoryWhatsapp.sendMessage(
+                        MessageRequest(
+                            to = "7225530820",
+                            type = TypeMessageEnum.TEMPLATE,
+                            template = MessageRequest.Template(
+                                name = TemplanesEnum.REQUEST_PAYMENT.templateName,
+                                components = listOf(
+                                    MessageRequest.Template.Component(
+                                        type = TypeComponentEnum.HEADER,
+                                        parameters = listOf(
+                                            MessageRequest.Template.Component.Parameter(
+                                                type = TypeMessageEnum.IMAGE,
+                                                image = MessageRequest.ImageMessage(
+                                                    id = qrResponse.data?.id
+                                                )
+                                            )
+                                        )
+                                    ),
+                                    MessageRequest.Template.Component(
+                                        type = TypeComponentEnum.BODY,
+                                        parameters = listOf(
+                                            MessageRequest.Template.Component.Parameter(
+                                                type = TypeMessageEnum.TEXT,
+                                                text = p.days.first().day.get(Calendar.WEEK_OF_YEAR)
+                                                    .toString()
+                                            ),
+                                            MessageRequest.Template.Component.Parameter(
+                                                type = TypeMessageEnum.TEXT,
+                                                text = p.days.joinToString(",") {
+                                                    "_${it.day.parseDate("dd-MMM")}:_ ${it.total.formatPrice}"
+                                                },
+                                            ),
+                                            MessageRequest.Template.Component.Parameter(
+                                                type = TypeMessageEnum.TEXT,
+                                                text = p.total.formatPrice
+                                            ), MessageRequest.Template .Component.Parameter(
+                                                type = TypeMessageEnum.TEXT,
+                                                text = if (weeksDeuda.isNullOrEmpty()) "Sin Deudas" else "_${weeksDeuda.size}_: ${weeksDeuda.sumOf { it.total }.formatPrice}"
+                                            ), MessageRequest.Template.Component.Parameter(
+                                                type = TypeMessageEnum.TEXT,
+                                                text = total.formatPrice
+                                            )
+                                        )
+                                    ),
+                                    MessageRequest.Template.Component(
+                                        type = TypeComponentEnum.BUTTON,
+                                        subType = "url",
+                                        index = 0,
+                                        parameters = listOf(
+                                            MessageRequest.Template.Component.Parameter(
+                                                type = TypeMessageEnum.TEXT,
+                                                text = qr.replace("\n","")
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+
+//                    val responseImage = repositoryBotT.sendPhoto(
+//                        QRGEncoder(
+//                            qr,
+//                            null,
+//                            QRGContents.Type.TEXT,
+//                            720
+//                        ).encodeAsBitmap()
+//                            .convertToFile(),
+//                        weekPerson + "\n\nTotal del QR: ${total.formatPrice}" +
+//                                "\n<a href=\"https://www.bienestarazteca.com.mx/pagoqr/?IdApp=2&qrData=$qr\">Pago con Baz</a>"
+//                    )
+//                    if (responseImage.data?.ok == false) {
+//                        return@forEach
+//                    }
                     val idCharges = p.days.flatMap { it.charges.map { it.idChargePerson } }
                     dao.saveMessageId(
-                        responseImage.data?.result?.messageId,
+                        "${messageResponse.data?.messages?.firstOrNull()?.id},${qrResponse.data?.id}",
                         idCharges
                     )
                 }
