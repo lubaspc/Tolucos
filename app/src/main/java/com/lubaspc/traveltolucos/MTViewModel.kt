@@ -36,9 +36,6 @@ class MTViewModel : ViewModel() {
     private val repository by lazy {
         RetrofitService()
     }
-    private val repositoryBotT by lazy {
-        BotRepository()
-    }
 
     private val repositoryGas by lazy {
         GasRepository()
@@ -278,7 +275,7 @@ class MTViewModel : ViewModel() {
             person.days.flatMap { it.charges.map { it.idMessage } }.distinct()
                 .forEach {
                     if (it == null) return@forEach
-                    repositoryBotT.editMessage(imgPay, messagePay, it)
+                    //repositoryBotT.editMessage(imgPay, messagePay, it)
                 }
             showProgress.postValue(false)
             consultHistory()
@@ -333,7 +330,7 @@ class MTViewModel : ViewModel() {
                     )
                     val messageResponse = repositoryWhatsapp.sendMessage(
                         MessageRequest(
-                            to = "7225530820",
+                            to = p.phone,
                             type = TypeMessageEnum.TEMPLATE,
                             template = MessageRequest.Template(
                                 name = TemplanesEnum.REQUEST_PAYMENT.templateName,
