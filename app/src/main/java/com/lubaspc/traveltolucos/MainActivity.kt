@@ -8,8 +8,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
+import com.lubaspc.traveltolucos.room.DBRoom
 import com.lubaspc.traveltolucos.room.InitDB
-import com.lubaspc.traveltolucos.ui.fragment.*
+import com.lubaspc.traveltolucos.ui.fragment.HistoryFragment
+import com.lubaspc.traveltolucos.ui.fragment.HomeFragment
+import com.lubaspc.traveltolucos.ui.fragment.MovementsDialog
+import com.lubaspc.traveltolucos.ui.fragment.SaveFormFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome {
@@ -27,6 +34,15 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (DBRoom.db.dbDao().getPerson().isEmpty()) {
+                InitDB.insertInitialDB()
+                withContext(Dispatchers.Main) {
+                    startActivity(intent)
+                    finish()
+                }
+            }
+        }
         nextFragment(HomeFragment())
         vModel.consultHistory()
         vModel.getProviders()
