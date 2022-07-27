@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,11 +36,8 @@ import kotlinx.coroutines.flow.onEach
 import java.util.*
 
 
-val iconEnableRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) android.R.color.system_accent1_600 else R.color.white
-val iconDisableRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) android.R.color.system_accent1_100 else R.color.white
-val colorBorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) android.R.color.system_accent1_200 else R.color.white
 
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
     Surface{
@@ -60,10 +57,10 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                     vModel.sendMessage(*week.persons.toTypedArray())
                                 } else showWeek.value = !showWeek.value
                             },
-                            elevation = 10.dp,
-//                            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+//                            elevation = 10.dp,
+                            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
                             modifier = Modifier.fillMaxWidth(),
-                            border = BorderStroke(1.dp, colorResource(id = colorBorder)),
+                            border = BorderStroke(1.dp, colorResource(id = android.R.color.system_accent1_200)),
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -72,7 +69,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                 Icon(
                                     Icons.Default.CheckCircle,
                                     contentDescription = null,
-                                    tint = colorResource(if (week.completePay) iconEnableRes else iconDisableRes)
+                                    tint = colorResource(if (week.completePay) android.R.color.system_accent1_600 else  android.R.color.system_accent1_100)
                                 )
                                 textTitle(week.monday.parseDate("dd") + "-" + week.sunday.parseDate())
                                 Spacer(Modifier.weight(1f, true))
@@ -90,11 +87,11 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth(),
-                                    elevation = 10.dp,
-//                                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+//                                    elevation = 10.dp,
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
                                     border = BorderStroke(
                                         1.dp,
-                                        colorResource(id = colorBorder)
+                                        colorResource(id = android.R.color.system_accent1_200)
                                     ),
                                     onClick = {
                                         if (showPerson.value && !p.completePay)
@@ -111,7 +108,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                                 Icon(
                                                     Icons.Default.CheckCircle,
                                                     contentDescription = null,
-                                                    tint = colorResource(if (p.completePay) iconEnableRes else iconDisableRes)
+                                                    tint = colorResource(if (p.completePay) android.R.color.system_accent1_600 else  android.R.color.system_accent1_100)
                                                 )
                                             }
                                             textTitle(p.person)
@@ -119,9 +116,9 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                             textTitle("T: ${p.total.formatPrice}")
                                         }
                                         if (showPerson.value) {
-                                            Divider(color = colorResource(id = colorBorder))
+                                            Divider(color = colorResource(id = android.R.color.system_accent1_200))
                                             p.days.map { d ->
-                                                Divider(color = colorResource(id = colorBorder))
+                                                Divider(color = colorResource(id = android.R.color.system_accent1_200))
                                                 Row {
                                                     textTitle(
                                                         d.day.parseDate(),
@@ -136,7 +133,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                                         Modifier.weight(1f)
                                                     )
                                                 }
-                                                Divider(color = colorResource(id = colorBorder))
+                                                Divider(color = colorResource(id = android.R.color.system_accent1_200))
                                                 d.charges.map { c ->
                                                     Row {
                                                         textBody(

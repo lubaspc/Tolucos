@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -30,7 +28,6 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.lubaspc.traveltolucos.MTViewModel
 import com.lubaspc.traveltolucos.model.Amount
 import com.lubaspc.traveltolucos.service.model.Movimiento
-import com.lubaspc.traveltolucos.ui.iconDisableRes
 import com.lubaspc.traveltolucos.utils.formatPrice
 import com.lubaspc.traveltolucos.utils.parseDate
 import java.util.*
@@ -51,9 +48,8 @@ class MovementsDialog : Fragment() {
             .apply {
                 addOnPositiveButtonClickListener {
                     textButton.value =
-                        Date(it.first).parseDate("yyyy-MMM-dd") + " - " + Date(it.second).parseDate(
-                            "yyyy-MMM-dd"
-                        )
+                        Date(it.first).parseDate("dd/MMM") + " - " +
+                                Date(it.second).parseDate("dd/MMM")
                     vModel.getMovements(it)
                 }
             }
@@ -75,8 +71,15 @@ class MovementsDialog : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = ComposeView(inflater.context).apply {
+        setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnLifecycleDestroyed(
+                viewLifecycleOwner
+            )
+        )
         setContent {
             MaterialTheme(
+                colorScheme = if (isSystemInDarkTheme()) dynamicDarkColorScheme(inflater.context)
+                else dynamicLightColorScheme(inflater.context),
                 content = { ContentMovements() }
             )
         }
@@ -127,7 +130,7 @@ class MovementsDialog : Fragment() {
                                     Icon(
                                         Icons.Default.Delete,
                                         contentDescription = null,
-                                        tint = colorResource(iconDisableRes)
+                                        tint = colorResource(android.R.color.system_accent1_100)
                                     )
                                 }
                                 TextButton(onClick = {

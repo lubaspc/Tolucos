@@ -14,7 +14,9 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +44,6 @@ class HistoryFragment : Fragment() {
     private val weekState = mutableStateListOf<WeekModel>()
     val refreshing = SwipeRefreshState(true)
 
-    @ExperimentalMaterialApi
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,6 +57,8 @@ class HistoryFragment : Fragment() {
         )
         setContent {
             MaterialTheme(
+                colorScheme = if (isSystemInDarkTheme()) dynamicDarkColorScheme(inflater.context)
+                else dynamicLightColorScheme(inflater.context),
                 content = { WeekView(weeks = weekState) }
             )
         }
