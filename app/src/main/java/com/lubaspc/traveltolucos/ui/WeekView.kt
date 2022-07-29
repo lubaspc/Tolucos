@@ -37,7 +37,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                         Card(
                             onClick = {
                                 if (showWeek.value && !week.completePay) {
-                                    vModel.sendMessageWhatsapp(*week.persons.toTypedArray())
+                                    vModel.sendMessageTelegram(*week.persons.toTypedArray())
                                 } else showWeek.value = !showWeek.value
                             },
 //                            elevation = 10.dp,
@@ -78,7 +78,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                     ),
                                     onClick = {
                                         if (showPerson.value && !p.completePay)
-                                            vModel.sendMessageWhatsapp(p)
+                                            vModel.sendMessageTelegram(p)
                                         else showPerson.value = !showPerson.value
                                     }
                                 ) {
