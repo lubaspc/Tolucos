@@ -17,6 +17,9 @@ interface DBDao{
     @Query("update ChargeDb set price = :price where chargeId = 9")
     suspend fun updatePriceGas(price: Double)
 
+    @Query("DELETE FROM ChargeDb where chargeId = 9")
+    suspend fun deleteGas()
+
     @Query("select * from ChargePersonDb where day BETWEEN :monday and :friday")
     suspend fun getDays(monday: Calendar,friday: Calendar): List<DayRelationDb>
 

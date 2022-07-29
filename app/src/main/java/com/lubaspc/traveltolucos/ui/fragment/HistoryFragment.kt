@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.accompanist.swiperefresh.SwipeRefreshState
+import com.google.gson.Gson
 import com.lubaspc.traveltolucos.MTViewModel
 import com.lubaspc.traveltolucos.R
 import com.lubaspc.traveltolucos.databinding.FragmentHistoryBinding

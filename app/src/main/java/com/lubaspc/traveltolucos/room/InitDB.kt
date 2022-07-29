@@ -13,28 +13,8 @@ class InitDB {
         fun insertInitialDB(scope: CoroutineScope) {
             scope.launch {
                 withContext(Dispatchers.IO) {
-                    //DBRoom.db.dbDao().deleteChargePerson()
+//                    DBRoom.db.dbDao().deleteChargePerson()
                     DBRoom.db.dbDao().apply {
-                        insertCharge(
-                            ChargeDb(
-                                9,
-                                "Gasolina",
-                                23.5,
-                                15,
-                                352.5,
-                                TypeCharge.GROUP
-                            )
-                        )
-                        insertCharge(
-                            ChargeDb(
-                                11,
-                                "(E)",
-                                50.0,
-                                1,
-                                50.0,
-                                TypeCharge.GROUP
-                            )
-                        )
                         insertCharge(
                             ChargeDb(
                                 13,

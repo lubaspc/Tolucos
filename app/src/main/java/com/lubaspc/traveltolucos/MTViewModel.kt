@@ -17,7 +17,6 @@ import com.lubaspc.traveltolucos.service.model.Movimiento
 import com.lubaspc.traveltolucos.service.model.Tag
 import com.lubaspc.traveltolucos.service.model.Usuario
 import com.lubaspc.traveltolucos.service.prometeo.PrometeoRepository
-import com.lubaspc.traveltolucos.service.telegramBot.BotRepository
 import com.lubaspc.traveltolucos.service.whatsappcloud.WhatsappCloudRepository
 import com.lubaspc.traveltolucos.service.whatsappcloud.models.MessageRequest
 import com.lubaspc.traveltolucos.service.whatsappcloud.models.TemplanesEnum
@@ -94,17 +93,6 @@ class MTViewModel : ViewModel() {
         }
     }
 
-    fun getPriceGas() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val newPrice = repositoryGas.getPricePremium()
-            if (newPrice != null)
-                dao.updatePriceGas(newPrice)
-            priceGas.postValue(
-                newPrice ?: charges.value?.first { it.id == 9L }?.total ?: 25.0
-            )
-        }
-    }
-
     private suspend fun getMovements(tags: List<Tag>?, date: Calendar) {
         if (tags == null) return
         movements.postValue(tags.map {
@@ -112,6 +100,7 @@ class MTViewModel : ViewModel() {
         }.flatMap {
             it.data ?: listOf()
         }.also {
+            val priceGas = repositoryGas.getPricePremium()
             charges.postValue(
                 charges.value?.filter { it.id != 0L }
                     ?.toMutableList()?.apply {
@@ -127,6 +116,26 @@ class MTViewModel : ViewModel() {
                                         true
                                     )
                                 })
+                        add(
+                            ChargeMD(
+                                98,
+                                "1/2 Consumo Gasolina",
+                                (priceGas ?: 22.9) / 2,
+                                15,
+                                TypeCharge.GROUP,
+                                true
+                            )
+                        )
+                        add(
+                            ChargeMD(
+                                99,
+                                "2/2 Consumo Gasolina",
+                                (priceGas ?: 22.9) / 2,
+                                15,
+                                TypeCharge.GROUP,
+                                true
+                            )
+                        )
                     })
         })
     }

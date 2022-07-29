@@ -8,8 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
+import com.lubaspc.traveltolucos.firebase.RealTime
+import com.lubaspc.traveltolucos.room.DBRoom
 import com.lubaspc.traveltolucos.room.InitDB
 import com.lubaspc.traveltolucos.ui.fragment.*
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome {
@@ -27,10 +30,11 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
+        RealTime.getPersons()
         nextFragment(HomeFragment())
         vModel.consultHistory()
         vModel.getProviders()
-        //InitDB.insertInitialDB(lifecycleScope)
+//        InitDB.insertInitialDB(lifecycleScope)
         vModel.showProgress.observe(this) {
             if (it && !progress.isShowing) {
                 progress.show()

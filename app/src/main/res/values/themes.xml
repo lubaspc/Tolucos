@@ -25,10 +25,7 @@
         <item name="android:windowIsFloating">true</item>
     </style>
 
-    <style name="Theme.AppWidget.AppWidgetContainer" parent="Theme.Material3.DynamicColors.DayNight">
-        <item name="android:background">?android:attr/colorBackground</item>
-        <item name="android:textColor">?android:attr/colorBackground</item>
-        <item name="android:tint">?android:attr/colorBackground</item>
+    <style name="Theme.AppWidget.AppWidgetContainer" parent="@android:style/Theme.DeviceDefault.DayNight">
     </style>
 
     <style name="FullScreenDialog">

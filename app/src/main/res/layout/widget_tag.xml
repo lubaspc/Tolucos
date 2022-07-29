@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/tag_widget_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="0dp"
+    android:layout_width="wrap_content"
     android:layout_weight="1"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
@@ -15,7 +15,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         tools:src="@drawable/ic_baseline_check_circle_outline_24"
-        />
+        app:tint="?android:attr/colorAccent" />
 
     <TextView
 
@@ -23,6 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
+        android:textColor="?android:attr/colorAccent"
         tools:text="MG 5"/>
 
 
@@ -30,6 +31,7 @@
         android:id="@+id/tag_widget_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="?android:attr/colorAccent"
         tools:text="IMGISDKS"/>
 
 </LinearLayout>
