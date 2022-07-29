@@ -7,6 +7,8 @@ import com.lubaspc.traveltolucos.App
 import com.lubaspc.traveltolucos.service.GenericResponse
 import com.lubaspc.traveltolucos.service.PaseTagService
 import com.lubaspc.traveltolucos.service.telegramBot.models.EntityMessageRequest
+import com.lubaspc.traveltolucos.utils.botToken
+import com.lubaspc.traveltolucos.utils.groupId
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -28,8 +30,6 @@ import java.util.concurrent.TimeUnit
 
 class BotRepository {
 
-    private val groupId = "-1001773583387"
-    private val botToken = "5363190935:AAFjkgFaJVjqvEbU-C6WuBOexVXK65ZlPhU"
 
     private val api by lazy {
         val okHttpClient = OkHttpClient().newBuilder()

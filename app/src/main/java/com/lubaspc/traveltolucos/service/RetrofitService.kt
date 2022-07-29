@@ -6,39 +6,29 @@ import com.google.gson.*
 import com.lubaspc.traveltolucos.App
 import com.lubaspc.traveltolucos.service.model.Tag
 import com.lubaspc.traveltolucos.utils.parseDate
+import com.lubaspc.traveltolucos.utils.passPase
+import com.lubaspc.traveltolucos.utils.userPase
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
 import retrofit2.HttpException
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.HTTP
-import java.io.File
-import java.io.IOException
-import java.lang.Exception
-import java.net.CookieManager
-import java.net.CookiePolicy
-import java.util.concurrent.TimeUnit
-import okhttp3.CookieJar
-import retrofit2.Response
 import java.lang.reflect.Type
-import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashSet
+import java.util.concurrent.TimeUnit
 
 
 class RetrofitService {
-    private var clientId: Long = 35497193
-    private var user = "7225530820"
-    private var pass = "5822772lpc"
-
     private var headersCookie =
         App.sharedPreferences.getStringSet(
             App.COOKIES,
             hashSetOf()
         ) ?: hashSetOf()
+    private var clientId =
+        App.sharedPreferences.getString("CLIENT_ID", "0")?.toLong() ?: 0L
 
 
     private val api by lazy {
@@ -106,13 +96,14 @@ class RetrofitService {
         try {
             cb().run {
                 if (code() == 401) {
-                    api.login(user, pass, true).apply {
+                    api.login(userPase, passPase, true).apply {
                         if (code() in 200..299) {
-                            clientId = body() ?: 0L
                             val setCookie = headers().values("set-cookie").toSet()
+                            clientId = body() ?: 0L
                             headersCookie = setCookie
                             App.sharedPreferences.edit {
-                                putStringSet(App.COOKIES,setCookie)
+                                putStringSet(App.COOKIES, setCookie)
+                                putString("CLIENT_ID", clientId.toString())
                                 clear()
                             }
                         }

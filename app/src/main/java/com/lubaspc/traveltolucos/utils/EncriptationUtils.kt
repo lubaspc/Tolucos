@@ -14,9 +14,6 @@ private val ivQr = "0733cf9a3f5fca77d220da6fb2ac1580"
 
 
 fun generateQR(amount: Double): String {
-    val account = "11561200000024"
-    val userName = "Lubin Perez Cervantes"
-    val cypherStore ="5bac4e66-0fb7-4523-b820-7f1548736bfd"
 
 
     return EncryptQR().encryptv2(
