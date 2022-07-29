@@ -52,16 +52,6 @@ class InitDB {
             DBRoom.db.dbDao().apply {
                 insertCharge(
                     ChargeDb(
-                        9,
-                        "Gasolina",
-                        23.5,
-                        15,
-                        352.5,
-                        TypeCharge.GROUP
-                    )
-                )
-                insertCharge(
-                    ChargeDb(
                         11,
                         "(E)",
                         50.0,

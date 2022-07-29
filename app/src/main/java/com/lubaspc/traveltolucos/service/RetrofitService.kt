@@ -4,10 +4,9 @@ import android.annotation.SuppressLint
 import androidx.core.content.edit
 import com.google.gson.*
 import com.lubaspc.traveltolucos.App
+import com.lubaspc.traveltolucos.BuildConfig
 import com.lubaspc.traveltolucos.service.model.Tag
 import com.lubaspc.traveltolucos.utils.parseDate
-import com.lubaspc.traveltolucos.utils.passPase
-import com.lubaspc.traveltolucos.utils.userPase
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
@@ -94,20 +93,10 @@ class RetrofitService {
 
     private suspend fun <T> onResponse(cb: suspend () -> Response<T>): GenericResponse<T> =
         try {
+            if (clientId == 0L) login()
             cb().run {
                 if (code() == 401) {
-                    api.login(userPase, passPase, true).apply {
-                        if (code() in 200..299) {
-                            val setCookie = headers().values("set-cookie").toSet()
-                            clientId = body() ?: 0L
-                            headersCookie = setCookie
-                            App.sharedPreferences.edit {
-                                putStringSet(App.COOKIES, setCookie)
-                                putString("CLIENT_ID", clientId.toString())
-                                clear()
-                            }
-                        }
-                    }
+                    login()
                     onResponse(cb)
                 } else GenericResponse(code(), body(), message())
             }
@@ -120,6 +109,20 @@ class RetrofitService {
             }
         }
 
+    suspend fun login(){
+        api.login(BuildConfig.userPase, BuildConfig.passPase, true).apply {
+            if (code() in 200..299) {
+                val setCookie = headers().values("set-cookie").toSet()
+                clientId = body() ?: 0L
+                headersCookie = setCookie
+                App.sharedPreferences.edit {
+                    putStringSet(App.COOKIES, setCookie)
+                    putString("CLIENT_ID", clientId.toString())
+                    clear()
+                }
+            }
+        }
+    }
 
     suspend fun getAccount() = onResponse { api.consultarDatosCuenta(clientId) }
 

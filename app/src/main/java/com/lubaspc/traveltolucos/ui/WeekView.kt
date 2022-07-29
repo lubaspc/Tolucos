@@ -1,12 +1,6 @@
 package com.lubaspc.traveltolucos.ui
 
-import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.ColorRes
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.Icons
@@ -15,26 +9,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshState
-import com.lubaspc.traveltolucos.MainActivity
-import com.lubaspc.traveltolucos.R
 import com.lubaspc.traveltolucos.model.WeekModel
 import com.lubaspc.traveltolucos.ui.fragment.HistoryFragment
 import com.lubaspc.traveltolucos.utils.formatPrice
-import com.lubaspc.traveltolucos.utils.into
-import com.lubaspc.traveltolucos.utils.moveField
 import com.lubaspc.traveltolucos.utils.parseDate
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
-import java.util.*
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +37,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                         Card(
                             onClick = {
                                 if (showWeek.value && !week.completePay) {
-                                    vModel.sendMessage(*week.persons.toTypedArray())
+                                    vModel.sendMessageWhatsapp(*week.persons.toTypedArray())
                                 } else showWeek.value = !showWeek.value
                             },
 //                            elevation = 10.dp,
@@ -95,7 +78,7 @@ fun HistoryFragment.WeekView(weeks: List<WeekModel>) {
                                     ),
                                     onClick = {
                                         if (showPerson.value && !p.completePay)
-                                            vModel.sendMessage(p)
+                                            vModel.sendMessageWhatsapp(p)
                                         else showPerson.value = !showPerson.value
                                     }
                                 ) {

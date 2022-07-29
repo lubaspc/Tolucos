@@ -4,11 +4,11 @@ import android.annotation.SuppressLint
 import androidx.core.content.edit
 import com.google.gson.*
 import com.lubaspc.traveltolucos.App
+import com.lubaspc.traveltolucos.BuildConfig
 import com.lubaspc.traveltolucos.service.GenericResponse
 import com.lubaspc.traveltolucos.service.PaseTagService
 import com.lubaspc.traveltolucos.service.telegramBot.models.EntityMessageRequest
-import com.lubaspc.traveltolucos.utils.botToken
-import com.lubaspc.traveltolucos.utils.groupId
+import com.lubaspc.traveltolucos.BuildConfig.groupId
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -41,7 +41,7 @@ class BotRepository {
 
         Retrofit.Builder()
             .client(okHttpClient.build())
-            .baseUrl("https://api.telegram.org/bot$botToken/")
+            .baseUrl("https://api.telegram.org/bot${BuildConfig.botToken}/")
             .addConverterFactory(
                 GsonConverterFactory.create(
                     GsonBuilder()

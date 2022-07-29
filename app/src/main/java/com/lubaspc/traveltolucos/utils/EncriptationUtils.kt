@@ -1,10 +1,12 @@
 package com.lubaspc.traveltolucos.utils
 
+import android.os.Build
 import java.security.spec.AlgorithmParameterSpec
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.util.Base64
+import com.lubaspc.traveltolucos.BuildConfig
 import java.nio.charset.Charset
 import mx.com.bancoazteca.bancadigital.qrutildecryptlib.EncryptQR
 import mx.com.bancoazteca.bancadigital.qrutildecryptlib.RequestQR
@@ -18,10 +20,10 @@ fun generateQR(amount: Double): String {
 
     return EncryptQR().encryptv2(
         RequestQR()
-            .withKey(cypherStore)
-            .withDestinationAccount(account)
+            .withKey("5bac4e66-0fb7-4523-b820-7f1548736bfd")
+            .withDestinationAccount(BuildConfig.account)
             .withAmountConcept(String.format("%.2f", amount).replace(".", ""))
-            .withAlias(userName)
+            .withAlias(BuildConfig.userName)
     )
 }
 

@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome {
         }
         nextFragment(HomeFragment())
         vModel.consultHistory()
-        vModel.getProviders()
+//        vModel.getProviders()
         //InitDB.insertInitialDB(lifecycleScope)
         vModel.showProgress.observe(this) {
             if (it && !progress.isShowing) {

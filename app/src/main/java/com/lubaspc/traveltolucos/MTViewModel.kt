@@ -17,6 +17,7 @@ import com.lubaspc.traveltolucos.service.model.Movimiento
 import com.lubaspc.traveltolucos.service.model.Tag
 import com.lubaspc.traveltolucos.service.model.Usuario
 import com.lubaspc.traveltolucos.service.prometeo.PrometeoRepository
+import com.lubaspc.traveltolucos.service.telegramBot.BotRepository
 import com.lubaspc.traveltolucos.service.whatsappcloud.WhatsappCloudRepository
 import com.lubaspc.traveltolucos.service.whatsappcloud.models.MessageRequest
 import com.lubaspc.traveltolucos.service.whatsappcloud.models.TemplanesEnum
@@ -42,6 +43,10 @@ class MTViewModel : ViewModel() {
 
     private val repositoryWhatsapp by lazy {
         WhatsappCloudRepository()
+    }
+
+    private val repositoryBotT by lazy {
+        BotRepository()
     }
 
 
@@ -315,14 +320,57 @@ class MTViewModel : ViewModel() {
 
     }
 
-    //  "<a href=\"aztecapay://?$qr/\">Banco Azteca</a>\n\n"
-    //  "<a href=\"baz://send_money/$qr/\">Baz</a>"
-    fun sendMessage(vararg persons: PersonModel) {
+    fun sendMessageTelegram(vararg persons: PersonModel) {
         viewModelScope.launch(Dispatchers.IO) {
             showProgress.postValue(true)
             try {
                 persons.forEach { p ->
-                    var weekPerson = p.messageWeekWhatsapp()
+                    var weekPerson = p.messageWeek()
+                    val weeksDeuda =
+                        weeks.value?.flatMap { w -> w.persons.filter { it.person == p.person && !it.completePay && it != p } }
+                    if (!weeksDeuda.isNullOrEmpty()) {
+                        weekPerson += "\n\n<b>Montos de semanas anteriores</b>\n${
+                            weeksDeuda.joinToString("\n") { "<b>-> ${it.total.formatPrice}</b>" }
+                        }"
+                    }
+                    val total = p.total + (weeksDeuda?.sumOf { it.total } ?: 0.0)
+                    val qr = generateQR(total)
+
+                    val responseImage = repositoryBotT.sendPhoto(
+                        QRGEncoder(
+                            qr,
+                            null,
+                            QRGContents.Type.TEXT,
+                            720
+                        ).encodeAsBitmap()
+                            .convertToFile(),
+                        "Pago para ${BuildConfig.BUILD_TYPE.uppercase()}\n"+weekPerson + "\n\nTotal del QR: ${total.formatPrice}" +
+                                "\n<a href=\"https://www.bienestarazteca.com.mx/pagoqr/?IdApp=2&qrData=$qr\">Pago con Baz</a>"
+                    )
+                    if (responseImage.data?.ok == false) {
+                        return@forEach
+                    }
+                    val idCharges = p.days.flatMap { it.charges.map { it.idChargePerson } }
+                    dao.saveMessageId(
+                        responseImage.data?.result?.messageId,
+                        idCharges
+                    )
+                }
+            } catch (e: Exception) {
+                throw e
+            } finally {
+                consultHistory()
+                showProgress.postValue(false)
+            }
+        }
+    }
+
+
+    fun sendMessageWhatsapp(vararg persons: PersonModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            showProgress.postValue(true)
+            try {
+                persons.forEach { p ->
                     val weeksDeuda =
                         weeks.value?.flatMap { w -> w.persons.filter { it.person == p.person && !it.completePay && it != p } }
                     val total = p.total + (weeksDeuda?.sumOf { it.total } ?: 0.0)
@@ -361,7 +409,7 @@ class MTViewModel : ViewModel() {
                                             MessageRequest.Template.Component.Parameter(
                                                 type = TypeMessageEnum.TEXT,
                                                 text = p.days.first().day.get(Calendar.WEEK_OF_YEAR)
-                                                    .toString()
+                                                    .toString() + " Cobro de: *${BuildConfig.BUILD_TYPE.uppercase()}*"
                                             ),
                                             MessageRequest.Template.Component.Parameter(
                                                 type = TypeMessageEnum.TEXT,
@@ -396,29 +444,13 @@ class MTViewModel : ViewModel() {
                             )
                         )
                     )
-
-//                    val responseImage = repositoryBotT.sendPhoto(
-//                        QRGEncoder(
-//                            qr,
-//                            null,
-//                            QRGContents.Type.TEXT,
-//                            720
-//                        ).encodeAsBitmap()
-//                            .convertToFile(),
-//                        weekPerson + "\n\nTotal del QR: ${total.formatPrice}" +
-//                                "\n<a href=\"https://www.bienestarazteca.com.mx/pagoqr/?IdApp=2&qrData=$qr\">Pago con Baz</a>"
-//                    )
-//                    if (responseImage.data?.ok == false) {
-//                        return@forEach
-//                    }
-                    val idCharges = p.days.flatMap { it.charges.map { it.idChargePerson } }
                     dao.saveMessageId(
                         "${messageResponse.data?.messages?.firstOrNull()?.id},${qrResponse.data?.id}",
-                        idCharges
+                        p.days.flatMap { it.charges.map { it.idChargePerson } }
                     )
                 }
             } catch (e: Exception) {
-                throw e
+//                throw e
             } finally {
                 consultHistory()
                 showProgress.postValue(false)

@@ -19,12 +19,33 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        maik{
+            debuggable true
+            minifyEnabled false
+            buildConfigField "String", "account","\"01720161133032\""
+            buildConfigField "String", "userName","\"Miguel Colin Flores\""
+            buildConfigField "String", "userPase","\"maiktmp@gmail.com\""
+            buildConfigField "String", "passPase","\"miguel23\""
+            buildConfigField "String", "groupId","\"-1001773583387\""
+            buildConfigField "String", "botToken","\"5363190935:AAFjkgFaJVjqvEbU-C6WuBOexVXK65ZlPhU\""
+        }
+        lubin{
+            debuggable true
+            minifyEnabled false
+            buildConfigField "String", "account","\"11561200000024\""
+            buildConfigField "String", "userName","\"Lubin Perez Cervantes\""
+            buildConfigField "String", "userPase","\"7225530820\""
+            buildConfigField "String", "passPase","\"5822772lpc\""
+            buildConfigField "String", "groupId","\"-1001773583387\""
+            buildConfigField "String", "botToken","\"5363190935:AAFjkgFaJVjqvEbU-C6WuBOexVXK65ZlPhU\""
         }
     }
     compileOptions {
