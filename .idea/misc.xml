@@ -18,8 +18,12 @@
         <entry key="app/src/main/res/drawable-v31/ic_launcher_foreground.xml" value="0.121" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.1905" />
         <entry key="app/src/main/res/drawable/ic_baseline_check_circle_24.xml" value="0.1905" />
+        <entry key="app/src/main/res/drawable/ic_baseline_check_circle_outline_24.xml" value="0.1905" />
         <entry key="app/src/main/res/drawable/ic_baseline_date_range_24.xml" value="0.26" />
+        <entry key="app/src/main/res/drawable/ic_baseline_menu_book_24.xml" value="0.1905" />
+        <entry key="app/src/main/res/drawable/ic_baseline_more_time_24.xml" value="0.1905" />
         <entry key="app/src/main/res/drawable/ic_baseline_remove_24.xml" value="0.22395833333333334" />
+        <entry key="app/src/main/res/drawable/ic_baseline_remove_circle_outline_24.xml" value="0.1905" />
         <entry key="app/src/main/res/drawable/ic_baseline_route_24.xml" value="0.1905" />
         <entry key="app/src/main/res/drawable/ic_baseline_save_24.xml" value="0.1905" />
         <entry key="app/src/main/res/drawable/ic_baseline_send_24.xml" value="0.1905" />
