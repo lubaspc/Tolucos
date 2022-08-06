@@ -16,8 +16,14 @@
         <entry key="app/src/main/res/drawable-v21/app_widget_background.xml" value="0.371875" />
         <entry key="app/src/main/res/drawable-v21/app_widget_inner_view_background.xml" value="0.371875" />
         <entry key="app/src/main/res/drawable-v31/ic_launcher_foreground.xml" value="0.121" />
+        <entry key="app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.1905" />
+        <entry key="app/src/main/res/drawable/ic_baseline_check_circle_24.xml" value="0.1905" />
         <entry key="app/src/main/res/drawable/ic_baseline_date_range_24.xml" value="0.26" />
         <entry key="app/src/main/res/drawable/ic_baseline_remove_24.xml" value="0.22395833333333334" />
+        <entry key="app/src/main/res/drawable/ic_baseline_route_24.xml" value="0.1905" />
+        <entry key="app/src/main/res/drawable/ic_baseline_save_24.xml" value="0.1905" />
+        <entry key="app/src/main/res/drawable/ic_baseline_send_24.xml" value="0.1905" />
+        <entry key="app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.1905" />
         <entry key="app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.122" />
         <entry key="app/src/main/res/layout/app_widget.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/fragment_history.xml" value="0.31140350877192985" />

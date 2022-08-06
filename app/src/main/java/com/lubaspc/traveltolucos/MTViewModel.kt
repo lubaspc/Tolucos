@@ -289,7 +289,7 @@ class MTViewModel : ViewModel() {
             person.days.flatMap { it.charges.map { it.idMessage } }.distinct()
                 .forEach {
                     if (it == null) return@forEach
-                    //repositoryBotT.editMessage(imgPay, messagePay, it)
+                    repositoryBotT.editMessage(imgPay, messagePay, it)
                 }
             showProgress.postValue(false)
             consultHistory()
@@ -378,7 +378,7 @@ class MTViewModel : ViewModel() {
 
                     val qrResponse = repositoryWhatsapp.uploadImage(
                         QRGEncoder(
-                            qr,
+                            "https://www.bienestarazteca.com.mx/pagoqr/?IdApp=2&qrData=$qr",
                             null,
                             QRGContents.Type.TEXT,
                             720
