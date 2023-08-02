@@ -40,11 +40,11 @@ class RetrofitService {
                 val request = it.request()
                 return@addInterceptor it.proceed(
                     request.newBuilder().header("User-Agent", "TuTag-Android")
-                        .header("Content-Type", "application/json; charset=utf-8")
                         .header("Accept", "application/json")
-                        .header("X-Api-Version", "2.5.0")
+                        .header("X-Api-Version", "4.0.0")
+                        .header("X-Pase-Canal", "WEB")
+                        .header("X-Pragma", "459b4f76350142fe0e6ec8599f6d0b656b24d28a920633208d145f2cd3b685d4")
                         .header("Cookie", headersCookie.joinToString(";"))
-
                         .build()
                 )
             }
@@ -52,7 +52,7 @@ class RetrofitService {
 
         Retrofit.Builder()
             .client(okHttpClient.build())
-            .baseUrl("https://tutag.pase.com.mx/sp-web/api/")
+            .baseUrl("https://apps2.pase.com.mx/sp-web/api/")
             .addConverterFactory(
                 GsonConverterFactory.create(
                     GsonBuilder()
@@ -110,7 +110,7 @@ class RetrofitService {
         }
 
     suspend fun login(){
-        api.login(BuildConfig.userPase, BuildConfig.passPase, true).apply {
+        api.login("7225530820", "5822772lpc", true).apply {
             if (code() in 200..299) {
                 val setCookie = headers().values("set-cookie").toSet()
                 clientId = body() ?: 0L

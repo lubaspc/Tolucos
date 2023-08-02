@@ -5,7 +5,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="4dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cv"
@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
                 android:textAlignment="center"
-                android:layout_margin="18dp"
+                android:layout_margin="14dp"
                 android:textStyle="bold" />
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

@@ -40,6 +40,8 @@ class InitDB {
                         insertPerson(PersonDb(4, "Mayle", "7226455089"))
                         insertPerson(PersonDb(5, "Nestor", "7228593599"))
                         insertPerson(PersonDb(6, "Lubin", "7225530820"))
+                        insertPerson(PersonDb(7, "Arturo", "7226874596"))
+                        insertPerson(PersonDb(8, "Otro", ""))
                         //deleteChargePerson()
                     }
                 }
@@ -86,6 +88,8 @@ class InitDB {
                 insertPerson(PersonDb(4, "Mayle", "7226455089"))
                 insertPerson(PersonDb(5, "Nestor", "7228593599"))
                 insertPerson(PersonDb(6, "Lubin", "7225530820"))
+                insertPerson(PersonDb(7, "Arturo", "7226874596"))
+                insertPerson(PersonDb(8, "Otro", ""))
                 //deleteChargePerson()
             }
         }

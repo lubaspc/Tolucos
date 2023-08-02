@@ -11,7 +11,7 @@ interface DBDao{
     @Query("select * from ChargePersonDb where day = :day")
     suspend fun chargesDay(day:Calendar): List<DayRelationDb>
 
-    @Query("select * from ChargePersonDb")
+    @Query("select * from ChargePersonDb ORDER BY day DESC")
     suspend fun getDays(): List<DayRelationDb>
 
     @Query("update ChargeDb set price = :price where chargeId = 9")

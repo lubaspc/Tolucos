@@ -37,13 +37,13 @@ class MainActivity : AppCompatActivity(), HomeFragment.HandlerHome {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         lifecycleScope.launch(Dispatchers.IO) {
-            if (DBRoom.db.dbDao().getPerson().isEmpty()) {
-                InitDB.insertInitialDB()
-                withContext(Dispatchers.Main) {
-                    startActivity(intent)
-                    finish()
-                }
-            }
+            InitDB.insertInitialDB(true)
+//            if (DBRoom.db.dbDao().getPerson().isEmpty()) {
+//                withContext(Dispatchers.Main) {
+//                    startActivity(intent)
+//                    finish()
+//                }
+//            }
         }
         nextFragment(HomeFragment())
         vModel.consultHistory()
